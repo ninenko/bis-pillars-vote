@@ -427,15 +427,48 @@ async function loadSummary(){
 }
 function buildComment(myV1,myV2,team,count){
   if(!myV1) return '';
-  if(count<2) return 'You are one of the first to vote — the team picture will fill in as others respond.';
-  const teamTop=team[0].p, myTop=PILLARS.find(p=>p.id===myV1[0]), myPredTop=PILLARS.find(p=>p.id===myV2[0]);
-  let c = (myTop.id===teamTop.id)
-    ? `Your top area, <b>${myTop.name}</b>, is also the team's top so far. `
-    : `You put <b>${myTop.name}</b> first; the team's top so far is <b>${teamTop.name}</b>. `;
-  c += (myPredTop.id===teamTop.id)
-    ? `You correctly predicted the team's favourite.`
-    : `You expected the team to favour <b>${myPredTop.name}</b>.`;
-  return c;
+  if(count<2) return 'You are one of the first to vote. Your ranking and prediction are saved &#8212; the team picture above will fill in and sharpen as more people respond.';
+  const nm=p=>p.name;
+  const order=team.map(r=>r.p);                 // team order, most to least important
+  const teamTop=order[0], team2=order[1], team3=order[2], teamLast=order[3];
+  const myTop=PILLARS.find(p=>p.id===myV1[0]);
+  const myPredTop=PILLARS.find(p=>p.id===myV2[0]);
+  const posTeam={}, posMine={};
+  order.forEach((p,i)=>posTeam[p.id]=i);
+  myV1.forEach((pid,i)=>posMine[pid]=i);
+  const lead=(team[0].score-team[1].score)/count;
+  const parts=[];
+
+  // 1) the team's picture
+  let t=`So far the team ranks <b>${nm(teamTop)}</b> first, then ${nm(team2)} and ${nm(team3)}, with <b>${nm(teamLast)}</b> last.`;
+  if(lead>=1.0) t+=` <b>${nm(teamTop)}</b> stands out as a clear front-runner.`;
+  else if(lead<=0.34) t+=` The top two are almost level, so the lead could still shift.`;
+  parts.push(t);
+
+  // 2) how your own view compares
+  let exact=0; myV1.forEach((pid,i)=>{ if(order[i].id===pid) exact++; });
+  let a = (myTop.id===teamTop.id)
+    ? `Your own top choice, <b>${nm(myTop)}</b>, matches the group.`
+    : `You placed <b>${nm(myTop)}</b> first, while the group leans toward <b>${nm(teamTop)}</b>.`;
+  if(exact>=3){ a+=` Overall your ranking is very close to the team's.`; }
+  else {
+    let hi=null,hiD=0, lo=null,loD=0;
+    PILLARS.forEach(p=>{ const d=posTeam[p.id]-posMine[p.id]; if(d>hiD){hiD=d;hi=p;} if(d<loD){loD=d;lo=p;} });
+    if(hi&&hiD>=2) a+=` You rate <b>${nm(hi)}</b> more highly than the group does.`;
+    else if(lo&&loD<=-2) a+=` You rate <b>${nm(lo)}</b> lower than the group does.`;
+  }
+  parts.push(a);
+
+  // 3) how well you read the room
+  let pexact=0; myV2.forEach((pid,i)=>{ if(order[i].id===pid) pexact++; });
+  let pr = (myPredTop.id===teamTop.id)
+    ? `You correctly guessed the group's favourite would be <b>${nm(teamTop)}</b>.`
+    : `You expected the group to favour <b>${nm(myPredTop)}</b>, but its top so far is <b>${nm(teamTop)}</b>.`;
+  if(pexact>=3) pr+=` You read the room well.`;
+  else if(pexact<=1) pr+=` The group has surprised you a little.`;
+  parts.push(pr);
+
+  return parts.join('<br><br>');
 }
 
 /* ---------- facilitator results ---------- */
