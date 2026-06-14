@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>BIS — Four Pillars: Priorities Vote</title>
+<title>BIS — Four Areas: Priorities Vote</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Open+Sans:wght@400;600;700&display=swap');
   :root{
@@ -29,7 +29,6 @@
   .pillar{border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;padding:13px 14px;background:#fff}
   .pillar h3{margin:0 0 3px;font-size:16px;display:flex;align-items:center;gap:8px}
   .pillar p{margin:4px 0 0;font-size:14.5px;color:#414b59}
-  .chip{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:6px;background:var(--c);color:#fff;font-size:12.5px;font-weight:700;flex:0 0 auto}
   .swatch{width:15px;height:15px;border-radius:50%;background:var(--c);flex:0 0 auto}
   .btn{display:block;width:100%;border:0;border-radius:12px;padding:15px 18px;font-size:16px;font-weight:600;
     background:var(--accent);color:#fff;cursor:pointer;transition:.15s;text-align:center}
@@ -37,12 +36,13 @@
   .btn:disabled{opacity:.4;cursor:not-allowed}
   .btn.alt{background:#eef2f5;color:var(--ink);border:1px solid var(--line)}
   .btn.small{width:auto;display:inline-block;padding:9px 14px;font-size:14px}
-  .steps{display:flex;gap:6px;margin:0 0 16px}
+  .steps{display:flex;gap:6px;margin:0 0 12px}
   .steps .s{flex:1;height:5px;border-radius:4px;background:var(--line)}
   .steps .s.on{background:var(--accent)}
-  .hint{font-size:13px;color:var(--muted);margin:2px 0 14px}
+  a.link{color:var(--accent);font-weight:600;text-decoration:none;cursor:pointer}
+  .homelink{float:right;font-size:13px}
 
-  /* drag-and-drop ranking */
+  /* drag-and-drop ranking (static layout) */
   .stage{position:relative;width:100%;overflow:visible;margin:8px 0 4px;touch-action:pan-y}
   .slots{display:flex;flex-direction:column;gap:10px}
   .slot{display:flex;align-items:center;gap:12px;min-height:58px;border:2px dashed var(--line);
@@ -57,9 +57,7 @@
   .badge{position:absolute;display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;
     background:#fff;border:1px solid var(--line);border-left:5px solid var(--c);
     box-shadow:0 4px 14px rgba(20,30,45,.13);font-weight:600;font-size:14px;color:var(--ink);
-    cursor:grab;user-select:none;touch-action:none;white-space:nowrap;z-index:3;will-change:left,top}
-  .badge .bchip{width:20px;height:20px;border-radius:6px;background:var(--c);color:#fff;font-size:12px;
-    font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+    cursor:grab;user-select:none;touch-action:none;white-space:nowrap;z-index:3}
   .badge .bdot{width:15px;height:15px;border-radius:50%;background:var(--c);flex:0 0 auto}
   .badge.dragging{cursor:grabbing;box-shadow:0 12px 30px rgba(20,30,45,.28);z-index:60;transform:scale(1.04)}
 
@@ -78,9 +76,19 @@
   .calc summary{cursor:pointer;color:var(--accent);font-weight:600}
   .calc p{margin:8px 0 0;line-height:1.55}
   .meta{text-align:center;color:var(--muted);font-size:13px;margin:8px 0}
+
+  /* personal summary */
+  .sumh{font-size:14px;color:var(--accent);margin:18px 0 7px;font-weight:700}
+  .sumh:first-of-type{margin-top:8px}
+  .sumlist{display:flex;flex-direction:column;gap:6px}
+  .sumrow{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff}
+  .srank{width:24px;height:24px;flex:0 0 auto;border-radius:7px;background:#eef2f5;color:var(--ink);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+  .sdot{width:13px;height:13px;border-radius:50%;background:var(--c);flex:0 0 auto}
+  .sname{flex:1;font-size:14px;font-weight:600}
+  .savg{font-size:12.5px;font-weight:700;color:#2a3340}
+
   .banner{background:#fff5e6;border:1px solid #f0d9a8;color:#7a5a16;border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:14px}
   .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:22px}
-  a.link{color:var(--accent);font-weight:600;text-decoration:none;cursor:pointer}
   .hidden{display:none}
   .row{display:flex;gap:10px}
   .row .btn{flex:1}
@@ -104,67 +112,85 @@
         <text x="0" y="1" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-weight="800" font-size="16" style="dominant-baseline:central">BIS</text>
       </g>
     </svg>
-    <div><b>Bishkek International School</b><span>Four Pillars — priorities vote</span></div>
+    <div><b>Bishkek International School</b><span>Four Areas — priorities vote</span></div>
   </header>
 
   <div id="banner" class="banner hidden"></div>
 
   <section id="screen-intro" class="screen">
     <div class="card">
-      <h1>Four pillars for the future of BIS</h1>
-      <p class="lead">These are the four directions we're scoping. In a moment you'll rank them — first by your own view, then by how you think the whole team sees them.</p>
+      <h1>Four areas for the future of BIS</h1>
+      <p class="lead">These are the four areas we're exploring. In a moment you'll rate them — first by your own view, then by how you think the team sees them.</p>
       <div class="pillars" id="introPillars"></div>
     </div>
-    <button class="btn" onclick="go('v1')">Start voting →</button>
+    <button class="btn" onclick="go('v1')">Start →</button>
     <p class="foot">Anonymous · takes about 2 minutes · <a class="link" onclick="go('results')">view live results</a></p>
   </section>
 
   <section id="screen-v1" class="screen hidden">
     <div class="steps"><div class="s on"></div><div class="s"></div></div>
     <div class="card">
-      <h1>Vote 1 — your priorities</h1>
-      <p class="lead">Drag each floating pillar up into a slot. <b>1</b> = most important to you, <b>4</b> = least.</p>
+      <a class="link homelink" onclick="go('intro')">&#8962; Home</a>
+      <h1>Rate four areas</h1>
+      <p class="lead">Drag each area into a slot. <b>1</b> = most important to you, <b>4</b> = least.</p>
       <div class="stage" id="stage-v1"></div>
     </div>
     <div class="row">
       <button class="btn alt small" style="flex:0 0 auto" onclick="go('intro')">Back</button>
-      <button class="btn" id="nextBtn" onclick="go('v2')" disabled>Next: predict the team →</button>
+      <button class="btn" id="nextBtn" onclick="go('v2')" disabled>Next &#8594;</button>
     </div>
   </section>
 
   <section id="screen-v2" class="screen hidden">
     <div class="steps"><div class="s on"></div><div class="s on"></div></div>
     <div class="card">
-      <h1>Vote 2 — predict the team</h1>
-      <p class="lead">Now drag them to show how you think <b>the whole team</b> will rank these on average — not your own view this time.</p>
+      <a class="link homelink" onclick="go('intro')">&#8962; Home</a>
+      <h1>How do you think the team would rate these on average?</h1>
+      <p class="lead">Now drag them to show how you think <b>the team as a whole</b> would rate these four areas — not your own view this time.</p>
       <div class="stage" id="stage-v2"></div>
     </div>
     <div class="row">
       <button class="btn alt small" style="flex:0 0 auto" onclick="go('v1')">Back</button>
-      <button class="btn" id="submitBtn" onclick="submitVote()" disabled>Submit both votes ✓</button>
+      <button class="btn" id="submitBtn" onclick="submitVote()" disabled>Submit &#10003;</button>
     </div>
   </section>
 
-  <section id="screen-thanks" class="screen hidden">
-    <div class="card" style="text-align:center">
-      <h1>Thank you 🎉</h1>
-      <p class="lead">Your votes are in. Results update live on the main screen as people respond.</p>
-      <button class="btn" onclick="go('results')">See live results →</button>
+  <section id="screen-summary" class="screen hidden">
+    <div class="card">
+      <a class="link homelink" onclick="go('intro')">&#8962; Home</a>
+      <h1>Thank you &#127881;</h1>
+      <p class="lead">Here's how your vote compares with the team. <span id="sum-count"></span></p>
+
+      <div class="sumh">How the team rated</div>
+      <div id="sum-team" class="sumlist"></div>
+
+      <div class="sumh">How you rated</div>
+      <div id="sum-you" class="sumlist"></div>
+
+      <div class="sumh">How you think the team would rate</div>
+      <div id="sum-pred" class="sumlist"></div>
+
+      <div class="insight" id="sum-comment" style="margin-top:16px"></div>
+    </div>
+    <div class="row">
+      <button class="btn alt small" style="flex:0 0 auto" onclick="go('intro')">Home</button>
+      <button class="btn alt" onclick="go('results')">Full results &#8594;</button>
     </div>
   </section>
 
   <section id="screen-results" class="screen hidden">
     <div class="card">
+      <a class="link homelink" onclick="go('intro')">&#8962; Home</a>
       <h1>Live results</h1>
-      <p class="meta" id="respCount">Loading…</p>
+      <p class="meta" id="respCount">Loading&#8230;</p>
 
       <div class="res-group">
-        <h2>The team's actual priorities <em>Vote 1</em></h2>
+        <h2>How the team rated <em>their own view</em></h2>
         <div id="bars-actual"></div>
       </div>
 
       <div class="res-group">
-        <h2>What people expected the team to say <em>Vote 2</em></h2>
+        <h2>What people expected the team to say <em>predictions</em></h2>
         <div id="bars-pred"></div>
       </div>
 
@@ -172,12 +198,12 @@
 
       <details class="calc">
         <summary>How are these numbers calculated?</summary>
-        <p>When you rank the pillars, each position scores points: 1st choice = 4, 2nd = 3, 3rd = 2, 4th = 1. We add up everyone's points for each pillar. The number on each bar is the <b>average</b> points it received — 4.0 means everyone placed it first, 1.0 means everyone placed it last — and the bar length shows that score as a share of the maximum. The top block uses people's own rankings (Vote 1); the bottom uses their predictions of the team (Vote 2).</p>
+        <p>When you rate the areas, each position scores points: 1st = 4, 2nd = 3, 3rd = 2, 4th = 1. We add up everyone's points for each area. The number on each bar is the <b>average</b> points it received — 4.0 means everyone placed it first, 1.0 means everyone placed it last — and the bar length shows that score as a share of the maximum. The top block uses people's own ratings; the bottom uses their predictions of the team.</p>
       </details>
     </div>
     <div class="row">
       <button class="btn alt small" style="flex:0 0 auto" onclick="go('intro')">Home</button>
-      <button class="btn alt" onclick="loadResults()">↻ Refresh</button>
+      <button class="btn alt" onclick="loadResults()">&#8635; Refresh</button>
     </div>
     <p class="foot" id="liveNote"></p>
   </section>
@@ -190,20 +216,21 @@ const DB_URL  = "https://bis-pillars-default-rtdb.firebaseio.com";
 const SESSION = "meeting-2026-04";
 
 const PILLARS = [
-  {id:"ai",      name:"AI mastery",       tag:"Pillar 1", color:"var(--p1)",
-   long:"We want every student and staff member to become a confident master of AI — using it as a critical thinker, not leaning on it. The goal is one shared, consistent way of building AI skills from primary right through to the Diploma."},
-  {id:"nature",  name:"Nature over screens", tag:"Pillar 2", color:"var(--p2)",
+  {id:"ai",      name:"AI mastery",       color:"var(--p1)",
+   long:"We want every student and staff member to become a confident master of AI &#8212; using it as a critical thinker, not leaning on it. The goal is one shared, consistent way of building AI skills from primary right through to the Diploma."},
+  {id:"nature",  name:"Nature over screens", color:"var(--p2)",
    long:"We want students and staff to spend more time outside in nature than in front of screens. The goal is to make the outdoors and our community a regular, valued part of how we learn."},
-  {id:"pathways",name:"Student pathways", tag:"Pillar 3", color:"var(--p3)",
-   long:"We want to give students more genuine choice and ownership over how they learn. The goal is to widen the routes through BIS — growing EPIC, new diploma options, and more flexible use of our spaces and timetable."},
-  {id:"time",    name:"Teaching time",    tag:"Pillar 4", color:"var(--p4)",
+  {id:"pathways",name:"Student pathways", color:"var(--p3)",
+   long:"We want to give students more genuine choice and ownership over how they learn. The goal is to widen the routes through BIS &#8212; growing EPIC, new diploma options, and more flexible use of our spaces and timetable."},
+  {id:"time",    name:"Teaching time",    color:"var(--p4)",
    long:"We want to balance directed teaching with more time for projects, group work, sport and creative activities. The goal is around three hours a day of front-of-class teaching, with the rest for hands-on, active learning."}
 ];
 const N = PILLARS.length;
 const LIVE = DB_URL && DB_URL.indexOf("PASTE_") === -1;
-const state = { submitted:false };
+const state = { submitted:false, myV1:null, myV2:null };
 
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
 function renderIntro(){
   document.getElementById('introPillars').innerHTML = shuffle(PILLARS).map(p=>`
     <div class="pillar" style="--c:${p.color}">
@@ -212,15 +239,15 @@ function renderIntro(){
     </div>`).join('');
 }
 
-/* ---------- drag-and-drop ranking ---------- */
-const rankCtx={}; let dragging=null, floatRAF=null;
+/* ---------- ranking (static tight two columns, random order) ---------- */
+const rankCtx={}; let dragging=null;
 
 function setupRank(which){
   const stage=document.getElementById('stage-'+which);
   const slots=document.createElement('div'); slots.className='slots';
   for(let i=0;i<N;i++){
     const sl=document.createElement('div'); sl.className='slot'; sl.dataset.slot=i;
-    const hint=i===0?'most important':(i===N-1?'least important':'drag a pillar here');
+    const hint=i===0?'most important':(i===N-1?'least important':'drag an area here');
     sl.innerHTML='<div class="rk">'+(i+1)+'</div><div class="holder"><span class="drop-hint">'+hint+'</span></div>';
     slots.appendChild(sl);
   }
@@ -232,50 +259,34 @@ function setupRank(which){
     b.innerHTML='<span class="bdot"></span>'+p.name;
     b._pid=p.id; stage.appendChild(b); badges[p.id]=b; attachDrag(b,which);
   });
-  rankCtx[which]={stage,slots,badges,place};
-  requestAnimationFrame(()=>layoutAnchors(which));
+  rankCtx[which]={stage,slots,badges,place,order:shuffle(PILLARS.map(p=>p.id))};
+  requestAnimationFrame(()=>layoutStatic(which));
   updateRankButton(which);
-  startFloat();
 }
 
-function layoutAnchors(which){
+function layoutStatic(which){
   const ctx=rankCtx[which]; const stage=ctx.stage, slots=ctx.slots;
-  const sw=stage.clientWidth; const slotsH=slots.offsetHeight;
-  const top=slotsH+20;
-  let bh=40; PILLARS.forEach(p=>{ bh=Math.max(bh, ctx.badges[p.id].offsetHeight||40); });
-  const r=7; const laneH=bh+2*r+18; const poolH=laneH*N;
-  stage.style.height=(top+poolH)+'px';
-  const lanes=shuffle(PILLARS.map((_,i)=>i));   // one unique lane per pillar -> never stacked
-  PILLARS.forEach((p,idx)=>{
-    const b=ctx.badges[p.id]; const bw=b.offsetWidth||150;
-    const lane=lanes[idx];
-    const y=top+lane*laneH+(laneH-bh)/2;
-    const lo=8+r, hi=Math.max(lo+1, sw-bw-8-r);
-    const x=lo+Math.random()*(hi-lo);
-    b._anchor={x,y,r,ph:Math.random()*6.283,sp:0.4+Math.random()*0.4};
-    b._home=Object.assign({},b._anchor);
-    b.style.left=x+'px'; b.style.top=y+'px';
-  });
-}
-
-function startFloat(){
-  if(floatRAF) return;
-  function loop(now){
-    const t=now/1000;
-    for(const which in rankCtx){
-      if(document.getElementById('screen-'+which).classList.contains('hidden')) continue;
-      const ctx=rankCtx[which];
-      for(const pid in ctx.badges){
-        const b=ctx.badges[pid];
-        if(ctx.place[pid]!==null || dragging===b || !b._anchor) continue;
-        const a=b._anchor;
-        b.style.left=(a.x+Math.cos(t*a.sp+a.ph)*a.r)+'px';
-        b.style.top =(a.y+Math.sin(t*a.sp+a.ph)*a.r)+'px';
-      }
-    }
-    floatRAF=requestAnimationFrame(loop);
+  const sw=stage.clientWidth; const top=slots.offsetHeight+14;
+  let bh=40; PILLARS.forEach(p=>bh=Math.max(bh,ctx.badges[p.id].offsetHeight||40));
+  const ids=ctx.order;
+  const w={}; ids.forEach(id=>w[id]=ctx.badges[id].offsetWidth||170);
+  const rowH=bh+12, gap=22;
+  const Lw=Math.max(w[ids[0]],w[ids[1]]);
+  const Rw=Math.max(w[ids[2]],w[ids[3]]);
+  const total=Lw+gap+Rw;
+  let anchors, poolH;
+  if(total<=sw-12){                       // wide enough: tight centred two columns
+    const startX=Math.max(6,(sw-total)/2);
+    const lx=startX, rx=startX+Lw+gap;
+    anchors=[[ids[0],lx,top],[ids[1],lx,top+rowH],[ids[2],rx,top],[ids[3],rx,top+rowH]];
+    poolH=rowH*2;
+  } else {                                 // narrow: zigzag so they never overlap
+    const lx=6, rx=Math.max(lx+Lw+10, sw-Rw-6);
+    anchors=[[ids[0],lx,top],[ids[1],lx,top+rowH],[ids[2],rx,top+rowH/2],[ids[3],rx,top+rowH*1.5]];
+    poolH=rowH*2+rowH/2;
   }
-  floatRAF=requestAnimationFrame(loop);
+  stage.style.height=(top+poolH+6)+'px';
+  anchors.forEach(a=>{ const b=ctx.badges[a[0]]; b._home={x:a[1],y:a[2]}; b.style.left=a[1]+'px'; b.style.top=a[2]+'px'; });
 }
 
 function attachDrag(b,which){
@@ -284,14 +295,13 @@ function attachDrag(b,which){
     const ctx=rankCtx[which];
     if(ctx.place[b._pid]!==null){ const si=ctx.place[b._pid]; ctx.place[b._pid]=null; markSlot(ctx,si,false); updateRankButton(which); }
     dragging=b; b.classList.add('dragging');
-    const sr=ctx.stage.getBoundingClientRect(); const br=b.getBoundingClientRect();
+    const sr=ctx.stage.getBoundingClientRect(), br=b.getBoundingClientRect();
     b._off={x:e.clientX-br.left,y:e.clientY-br.top}; b._sr=sr;
   });
   b.addEventListener('pointermove',e=>{
     if(dragging!==b) return;
-    const sr=b._sr;
-    b.style.left=(e.clientX-sr.left-b._off.x)+'px';
-    b.style.top =(e.clientY-sr.top -b._off.y)+'px';
+    b.style.left=(e.clientX-b._sr.left-b._off.x)+'px';
+    b.style.top =(e.clientY-b._sr.top -b._off.y)+'px';
     highlightSlot(which,e.clientX,e.clientY);
   });
   function end(e,cancel){
@@ -299,17 +309,15 @@ function attachDrag(b,which){
     const ctx=rankCtx[which]; clearHighlight(ctx);
     const si=cancel?null:slotAt(which,e.clientX,e.clientY);
     if(si!==null){
-      for(const pid in ctx.place){ if(ctx.place[pid]===si && pid!==b._pid){ ctx.place[pid]=null; markSlot(ctx,si,false); } }
+      for(const pid in ctx.place){ if(ctx.place[pid]===si && pid!==b._pid){ ctx.place[pid]=null; markSlot(ctx,si,false); resetHome(ctx.badges[pid]); } }
       ctx.place[b._pid]=si; placeBadgeInSlot(ctx,b,si); markSlot(ctx,si,true);
-    } else {
-      if(b._home) b._anchor=Object.assign({},b._home);
-    }
+    } else { resetHome(b); }
     updateRankButton(which);
   }
   b.addEventListener('pointerup',e=>end(e,false));
   b.addEventListener('pointercancel',e=>end(e,true));
 }
-
+function resetHome(b){ if(b._home){ b.style.left=b._home.x+'px'; b.style.top=b._home.y+'px'; } }
 function slotAt(which,cx,cy){
   const sls=rankCtx[which].slots.children;
   for(let i=0;i<sls.length;i++){ const r=sls[i].getBoundingClientRect(); if(cx>=r.left&&cx<=r.right&&cy>=r.top&&cy<=r.bottom) return i; }
@@ -323,7 +331,7 @@ function clearHighlight(ctx){ Array.from(ctx.slots.children).forEach(s=>s.classL
 function markSlot(ctx,si,filled){ ctx.slots.children[si].classList.toggle('filled',filled); }
 function placeBadgeInSlot(ctx,b,si){
   const holder=ctx.slots.children[si].querySelector('.holder');
-  const sr=ctx.stage.getBoundingClientRect(); const hr=holder.getBoundingClientRect();
+  const sr=ctx.stage.getBoundingClientRect(), hr=holder.getBoundingClientRect();
   b.style.left=(hr.left-sr.left)+'px';
   b.style.top =(hr.top-sr.top+(hr.height-b.offsetHeight)/2)+'px';
 }
@@ -344,21 +352,24 @@ function go(screen){
   document.getElementById('screen-'+screen).classList.remove('hidden');
   window.scrollTo(0,0);
   if((screen==='v1'||screen==='v2') && !rankCtx[screen]) setupRank(screen);
-  if(screen==='v1'||screen==='v2') startFloat();
+  if(screen==='summary') loadSummary();
   if(screen==='results') loadResults();
   if(LIVE) location.hash = screen;
 }
 
 /* ---------- scoring ---------- */
-function pointsFromOrder(order){
-  const pts={}; order.forEach((id,i)=> pts[id]= N - i); return pts;
+function pointsFromOrder(order){ const pts={}; order.forEach((id,i)=> pts[id]= N - i); return pts; }
+function rankedFromResponses(resp,key){
+  const score={}; PILLARS.forEach(p=>score[p.id]=0);
+  resp.forEach(v=>{ if(v[key]){ const pt=pointsFromOrder(v[key]); PILLARS.forEach(p=>score[p.id]+=pt[p.id]||0); } });
+  return [...PILLARS].sort((a,b)=>score[b.id]-score[a.id]).map(p=>({p,score:score[p.id]}));
 }
 
 /* ---------- submit ---------- */
 async function submitVote(){
-  if(state.submitted){ toast("You've already voted — thank you!"); go('results'); return; }
+  if(state.submitted){ go('summary'); return; }
   const v1=orderOf('v1'), v2=orderOf('v2');
-  if(v1.includes(null)||v2.includes(null)){ toast('Please place all four pillars'); return; }
+  if(v1.includes(null)||v2.includes(null)){ toast('Please place all four areas'); return; }
   const btn=document.getElementById('submitBtn'); btn.disabled=true; btn.textContent='Submitting…';
   const payload = { v1, v2, ts:Date.now() };
   try{
@@ -370,15 +381,15 @@ async function submitVote(){
       const arr=JSON.parse(localStorage.getItem('demo_'+SESSION)||'[]');
       arr.push(payload); localStorage.setItem('demo_'+SESSION,JSON.stringify(arr));
     }
-    state.submitted=true;
-    go('thanks');
+    state.submitted=true; state.myV1=v1; state.myV2=v2;
+    go('summary');
   }catch(e){
     toast('Could not submit — check connection');
-    btn.disabled=false; btn.textContent='Submit both votes ✓';
+    btn.disabled=false; btn.textContent='Submit ✓';
   }
 }
 
-/* ---------- results ---------- */
+/* ---------- data ---------- */
 async function fetchResponses(){
   if(LIVE){
     const r= await fetch(`${DB_URL}/sessions/${SESSION}/responses.json`);
@@ -388,82 +399,95 @@ async function fetchResponses(){
     return JSON.parse(localStorage.getItem('demo_'+SESSION)||'[]');
   }
 }
+
+/* ---------- personal summary ---------- */
+function sumRow(rank,p,avg){
+  return `<div class="sumrow"><span class="srank">${rank}</span><span class="sdot" style="--c:${p.color}"></span>
+    <span class="sname">${p.name}</span>${avg!=null?`<span class="savg">${avg}</span>`:''}</div>`;
+}
+function renderOrder(elId,order){
+  document.getElementById(elId).innerHTML = order.map((id,i)=>{ const p=PILLARS.find(x=>x.id===id); return sumRow(i+1,p,null); }).join('');
+}
+async function loadSummary(){
+  if(state.myV1) renderOrder('sum-you',state.myV1);
+  if(state.myV2) renderOrder('sum-pred',state.myV2);
+  let resp=[]; try{ resp=await fetchResponses(); }catch(e){}
+  const count=resp.length;
+  document.getElementById('sum-count').textContent = count? `Based on ${count} ${count===1?'response':'responses'} so far.` : '';
+  const team=rankedFromResponses(resp,'v1');
+  document.getElementById('sum-team').innerHTML = team.map((r,i)=>sumRow(i+1,r.p,count?(r.score/count).toFixed(2):null)).join('');
+  document.getElementById('sum-comment').innerHTML = buildComment(state.myV1,state.myV2,team,count);
+}
+function buildComment(myV1,myV2,team,count){
+  if(!myV1) return '';
+  if(count<2) return 'You are one of the first to vote — the team picture will fill in as others respond.';
+  const teamTop=team[0].p, myTop=PILLARS.find(p=>p.id===myV1[0]), myPredTop=PILLARS.find(p=>p.id===myV2[0]);
+  let c = (myTop.id===teamTop.id)
+    ? `Your top area, <b>${myTop.name}</b>, is also the team's top so far. `
+    : `You put <b>${myTop.name}</b> first; the team's top so far is <b>${teamTop.name}</b>. `;
+  c += (myPredTop.id===teamTop.id)
+    ? `You correctly predicted the team's favourite.`
+    : `You expected the team to favour <b>${myPredTop.name}</b>.`;
+  return c;
+}
+
+/* ---------- facilitator results ---------- */
 async function loadResults(){
   let resp=[];
   try{ resp= await fetchResponses(); }
   catch(e){ document.getElementById('respCount').textContent='Could not load results.'; return; }
-
   const count=resp.length;
   document.getElementById('respCount').textContent =
     count===0 ? 'No votes yet — be the first!' : `${count} ${count===1?'response':'responses'} so far`;
-
   const actual={}, pred={};
   PILLARS.forEach(p=>{actual[p.id]=0; pred[p.id]=0;});
   resp.forEach(v=>{
     if(v.v1){ const pt=pointsFromOrder(v.v1); PILLARS.forEach(p=>actual[p.id]+=pt[p.id]||0); }
     if(v.v2){ const pt=pointsFromOrder(v.v2); PILLARS.forEach(p=>pred[p.id]+=pt[p.id]||0); }
   });
-
   drawBars('bars-actual', actual, count);
   drawBars('bars-pred',  pred,   count);
   drawInsight(actual, pred, count);
-
-  document.getElementById('liveNote').textContent =
-    LIVE ? 'Auto-refreshing every 5 seconds' : 'DEMO MODE — votes stored only on this device';
+  document.getElementById('liveNote').textContent = LIVE ? 'Auto-refreshing every 5 seconds' : 'DEMO MODE — votes stored only on this device';
 }
 function drawBars(elId, scores, count){
   const max = count*N || 1;
   const ranked=[...PILLARS].sort((a,b)=>scores[b.id]-scores[a.id]);
   document.getElementById(elId).innerHTML = ranked.map(p=>{
-    const s=scores[p.id]; const pct=Math.round(s/max*100);
-    const avg = count? (s/count).toFixed(2):'0';
+    const s=scores[p.id]; const pct=Math.round(s/max*100); const avg = count? (s/count).toFixed(2):'0';
     return `<div class="bar" style="--c:${p.color}">
       <div class="lbl"><span class="sq" style="--c:${p.color}"></span>${p.name}</div>
-      <div class="track"><div class="fill" style="--c:${p.color};width:${pct}%"></div>
-        <span class="val">${avg}</span></div>
+      <div class="track"><div class="fill" style="--c:${p.color};width:${pct}%"></div><span class="val">${avg}</span></div>
     </div>`;
   }).join('');
 }
 function drawInsight(actual, pred, count){
   const box=document.getElementById('insight');
-  if(count<2){ box.innerHTML='Insights appear once a few people have voted. The number on each bar is the average priority score (higher = more important).'; return; }
+  if(count<2){ box.innerHTML='Insights appear once a few people have voted. The number on each bar is the average score (higher = more important).'; return; }
   let maxGap={d:-1e9,p:null}, minGap={d:1e9,p:null};
-  PILLARS.forEach(p=>{
-    const d=(actual[p.id]-pred[p.id])/count;
-    if(d>maxGap.d) maxGap={d,p};
-    if(d<minGap.d) minGap={d,p};
-  });
+  PILLARS.forEach(p=>{ const d=(actual[p.id]-pred[p.id])/count; if(d>maxGap.d) maxGap={d,p}; if(d<minGap.d) minGap={d,p}; });
   const topActual=[...PILLARS].sort((a,b)=>actual[b.id]-actual[a.id])[0];
   const topPred=[...PILLARS].sort((a,b)=>pred[b.id]-pred[a.id])[0];
-  let html=`The team's top priority is <b>${topActual.name}</b>. `;
-  if(topPred.id!==topActual.id){
-    html+=`But people <em>expected</em> the team to rank <b>${topPred.name}</b> first — a gap between reality and perception. `;
-  }else{
-    html+=`People correctly expected the team to rank it first. `;
-  }
-  if(maxGap.p && Math.abs(maxGap.d)>0.25){
-    html+=`<br><br><b>${maxGap.p.name}</b> is valued more than people assumed the team would. `;
-  }
-  if(minGap.p && minGap.p.id!==(maxGap.p&&maxGap.p.id) && Math.abs(minGap.d)>0.25){
-    html+=`<b>${minGap.p.name}</b> is valued less than people expected.`;
-  }
+  let html=`The team's top area is <b>${topActual.name}</b>. `;
+  html += (topPred.id!==topActual.id)
+    ? `But people <em>expected</em> the team to rank <b>${topPred.name}</b> first — a gap between reality and perception. `
+    : `People correctly expected the team to rank it first. `;
+  if(maxGap.p && Math.abs(maxGap.d)>0.25) html+=`<br><br><b>${maxGap.p.name}</b> is valued more than people assumed the team would. `;
+  if(minGap.p && minGap.p.id!==(maxGap.p&&maxGap.p.id) && Math.abs(minGap.d)>0.25) html+=`<b>${minGap.p.name}</b> is valued less than people expected.`;
   box.innerHTML=html;
 }
 
 let toastT;
-function toast(msg){
-  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
-  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600);
-}
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600); }
 
 setInterval(()=>{
   if(!document.getElementById('screen-results').classList.contains('hidden')) loadResults();
+  else if(!document.getElementById('screen-summary').classList.contains('hidden')) loadSummary();
 }, 5000);
 
 renderIntro();
 if(!LIVE){
-  const b=document.getElementById('banner');
-  b.classList.remove('hidden');
+  const b=document.getElementById('banner'); b.classList.remove('hidden');
   b.innerHTML='Demo mode. Add your Firebase database URL in the code to collect votes from everyone\'s phones.';
 }
 if(location.hash==='#results'){ go('results'); } else { go('intro'); }
