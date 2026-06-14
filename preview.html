@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BIS — Voting layout preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Open+Sans:wght@400;600;700&display=swap');
+  :root{--bg:#f4f6f8;--card:#fff;--ink:#1f2733;--muted:#6b7785;--line:#e3e8ee;--accent:#00008b;--gold:#f2b600;
+    --p1:#3b6ea5;--p2:#4a9d5b;--p3:#b9892f;--p4:#8a5fb0}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;font-family:"Open Sans",-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  .wrap{max-width:620px;margin:0 auto;padding:18px 16px 60px}
+  h1{font-family:"Playfair Display",Georgia,serif;font-size:21px;color:var(--accent);margin:0 0 4px}
+  p.sub{color:var(--muted);font-size:13.5px;margin:0 0 16px}
+  .seg{display:flex;gap:8px;margin:0 0 14px}
+  .seg button{flex:1;padding:11px 8px;border:1px solid var(--line);background:#fff;border-radius:11px;font-size:13.5px;
+    font-weight:600;color:var(--ink);cursor:pointer;line-height:1.25}
+  .seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 1px 3px rgba(20,30,45,.08),0 6px 24px rgba(20,30,45,.05)}
+  .lead{color:var(--muted);font-size:14px;margin:0 0 6px}
+  .slots{display:flex;flex-direction:column;gap:10px}
+  .slot{display:flex;align-items:center;gap:12px;min-height:54px;border:2px dashed var(--line);border-radius:14px;padding:8px 10px;background:#fbfcfd;transition:.15s}
+  .slot.over{border-color:var(--accent);background:#e9f4f2}
+  .slot.filled{border-style:solid;border-color:#dfe6ec;background:#fff}
+  .slot .rk{width:32px;height:32px;flex:0 0 auto;border-radius:9px;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .slot .holder{flex:1;min-height:38px;display:flex;align-items:center}
+  .slot .drop-hint{color:var(--muted);font-size:13px}
+  .slot.filled .drop-hint{display:none}
+  .stage{position:relative;width:100%;overflow:visible;margin:8px 0 2px;touch-action:pan-y}
+  .badge{position:absolute;display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff;
+    border:1px solid var(--line);border-left:5px solid var(--c);box-shadow:0 4px 14px rgba(20,30,45,.13);
+    font-weight:600;font-size:14px;color:var(--ink);cursor:grab;user-select:none;touch-action:none;white-space:nowrap;z-index:3;will-change:left,top}
+  .badge .bdot{width:15px;height:15px;border-radius:50%;background:var(--c);flex:0 0 auto}
+  .badge.dragging{cursor:grabbing;box-shadow:0 12px 30px rgba(20,30,45,.28);z-index:60;transform:scale(1.04)}
+  .btn{display:inline-block;border:1px solid var(--line);background:#eef2f5;border-radius:10px;padding:9px 14px;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Voting layout — preview</h1>
+  <p class="sub">Two options for how the four pillars sit before you drag them. Tap to compare; drag a pill into a slot to test.</p>
+  <div class="seg">
+    <button id="btnA" class="on" onclick="setMode('A')">A · Floating, two columns<br>(drifts &amp; swaps places)</button>
+    <button id="btnB" onclick="setMode('B')">B · Randomly placed<br>(static, no motion)</button>
+  </div>
+  <div class="card">
+    <p class="lead" id="lead"></p>
+    <div class="slots" id="slots"></div>
+    <div class="stage" id="stage"></div>
+    <span class="btn" onclick="reshuffle()">↻ Shuffle positions</span>
+  </div>
+</div>
+
+<script>
+const PILLARS=[
+  {id:"ai",name:"AI mastery",color:"var(--p1)"},
+  {id:"nature",name:"Nature over screens",color:"var(--p2)"},
+  {id:"pathways",name:"Student pathways",color:"var(--p3)"},
+  {id:"time",name:"Teaching time",color:"var(--p4)"}
+];
+const N=PILLARS.length;
+let MODE='A', dragging=null, floatRAF=null, swapTimer=null;
+const place={}; const badges={};
+const stage=document.getElementById('stage'); const slotsEl=document.getElementById('slots');
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function build(){
+  for(let i=0;i<N;i++){
+    const sl=document.createElement('div'); sl.className='slot';
+    const hint=i===0?'most important':(i===N-1?'least important':'drag a pillar here');
+    sl.innerHTML='<div class="rk">'+(i+1)+'</div><div class="holder"><span class="drop-hint">'+hint+'</span></div>';
+    slotsEl.appendChild(sl);
+  }
+  PILLARS.forEach(p=>{
+    place[p.id]=null;
+    const b=document.createElement('div'); b.className='badge'; b.style.setProperty('--c',p.color);
+    b.innerHTML='<span class="bdot"></span>'+p.name;
+    b._pid=p.id; stage.appendChild(b); badges[p.id]=b; attachDrag(b);
+  });
+}
+
+function poolTop(){ return slotsEl.offsetHeight+20; }
+
+function layout(){
+  const sw=stage.clientWidth; const top=poolTop();
+  let bh=40; PILLARS.forEach(p=>bh=Math.max(bh,badges[p.id].offsetHeight||40));
+  if(MODE==='A'){
+    const rowH=bh+26; const poolH=rowH*N; stage.style.height=(top+poolH)+'px';
+    // staggered two columns: left rows 0&2, right rows 1&3 -> no two share a row
+    const order=shuffle(PILLARS.map((_,i)=>i)); // random badge -> anchor slot
+    const anchors=[];
+    for(let i=0;i<N;i++){
+      const isLeft=(i%2===0);
+      const bw=180; // approx for x targets, refined per badge below
+      anchors.push({left:isLeft,row:i});
+    }
+    PILLARS.forEach((p,idx)=>{
+      const b=badges[p.id]; const bw=b.offsetWidth||170;
+      const a=anchors[order[idx]];
+      const x=a.left? 8 : Math.max(10, sw-bw-8);
+      const y=top + a.row*rowH + (rowH-bh)/2;
+      b._base={x,y}; b._target={x,y};
+      b._orbit={r:7,ph:Math.random()*6.283,sp:0.5+Math.random()*0.4};
+      b._home={x,y};
+      b.style.left=x+'px'; b.style.top=y+'px';
+    });
+    startFloat(); startSwaps();
+  } else {
+    stopFloat(); stopSwaps();
+    const poolH=250; stage.style.height=(top+poolH)+'px';
+    const placed=[];
+    PILLARS.forEach(p=>{
+      const b=badges[p.id]; const bw=b.offsetWidth||170;
+      let x,y,ok=false,tries=0;
+      const maxX=Math.max(8,sw-bw-8), maxY=top+poolH-bh-6, pad=12;
+      while(!ok && tries++<400){
+        x=8+Math.random()*(maxX-8); y=top+6+Math.random()*(maxY-top-6); ok=true;
+        for(const r of placed){ if(x<r.x+r.w+pad && x+bw+pad>r.x && y<r.y+bh+pad && y+bh+pad>r.y){ ok=false; break; } }
+      }
+      placed.push({x,y,w:bw});
+      b._home={x,y}; b.style.left=x+'px'; b.style.top=y+'px';
+    });
+  }
+}
+
+function startFloat(){
+  if(floatRAF) return;
+  function loop(now){
+    const t=now/1000;
+    if(MODE==='A'){
+      for(const pid in badges){
+        const b=badges[pid]; if(place[pid]!==null||dragging===b||!b._base) continue;
+        b._base.x += (b._target.x-b._base.x)*0.05;
+        b._base.y += (b._target.y-b._base.y)*0.05;
+        const o=b._orbit;
+        b.style.left=(b._base.x+Math.cos(t*o.sp+o.ph)*o.r)+'px';
+        b.style.top =(b._base.y+Math.sin(t*o.sp+o.ph)*o.r)+'px';
+      }
+    }
+    floatRAF=requestAnimationFrame(loop);
+  }
+  floatRAF=requestAnimationFrame(loop);
+}
+function stopFloat(){ if(floatRAF){cancelAnimationFrame(floatRAF);floatRAF=null;} }
+function startSwaps(){
+  stopSwaps();
+  swapTimer=setInterval(()=>{
+    if(MODE!=='A') return;
+    // swap two badges within the same column (same x) -> vertical glide, never overlap
+    const free=PILLARS.map(p=>p.id).filter(id=>place[id]===null && dragging!==badges[id]);
+    const cols={};
+    free.forEach(id=>{const x=Math.round(badges[id]._target.x); (cols[x]=cols[x]||[]).push(id);});
+    const pairs=Object.values(cols).filter(a=>a.length>=2);
+    if(!pairs.length) return;
+    const pair=pairs[Math.floor(Math.random()*pairs.length)];
+    const a=badges[pair[0]], b=badges[pair[1]];
+    const tmp=a._target; a._target=b._target; b._target=tmp;
+  },2600);
+}
+function stopSwaps(){ if(swapTimer){clearInterval(swapTimer);swapTimer=null;} }
+
+function attachDrag(b){
+  b.addEventListener('pointerdown',e=>{
+    e.preventDefault(); b.setPointerCapture(e.pointerId);
+    if(place[b._pid]!==null){ const si=place[b._pid]; place[b._pid]=null; slotsEl.children[si].classList.remove('filled'); }
+    dragging=b; b.classList.add('dragging');
+    const sr=stage.getBoundingClientRect(), br=b.getBoundingClientRect();
+    b._off={x:e.clientX-br.left,y:e.clientY-br.top}; b._sr=sr;
+  });
+  b.addEventListener('pointermove',e=>{
+    if(dragging!==b) return;
+    b.style.left=(e.clientX-b._sr.left-b._off.x)+'px';
+    b.style.top =(e.clientY-b._sr.top -b._off.y)+'px';
+    const si=slotAt(e.clientX,e.clientY);
+    Array.from(slotsEl.children).forEach((s,i)=>s.classList.toggle('over',i===si));
+  });
+  function end(e,cancel){
+    if(dragging!==b) return; dragging=null; b.classList.remove('dragging');
+    Array.from(slotsEl.children).forEach(s=>s.classList.remove('over'));
+    const si=cancel?null:slotAt(e.clientX,e.clientY);
+    if(si!==null){
+      for(const pid in place){ if(place[pid]===si&&pid!==b._pid){ place[pid]=null; slotsEl.children[si].classList.remove('filled'); resetHome(badges[pid]); } }
+      place[b._pid]=si; const h=slotsEl.children[si].querySelector('.holder');
+      const sr=stage.getBoundingClientRect(), hr=h.getBoundingClientRect();
+      b.style.left=(hr.left-sr.left)+'px'; b.style.top=(hr.top-sr.top+(hr.height-b.offsetHeight)/2)+'px';
+      slotsEl.children[si].classList.add('filled');
+    } else { resetHome(b); }
+  }
+  b.addEventListener('pointerup',e=>end(e,false));
+  b.addEventListener('pointercancel',e=>end(e,true));
+}
+function resetHome(b){
+  if(MODE==='A'){ b._base={x:b._home.x,y:b._home.y}; b._target={x:b._home.x,y:b._home.y}; }
+  b.style.left=b._home.x+'px'; b.style.top=b._home.y+'px';
+}
+function slotAt(cx,cy){
+  const s=slotsEl.children;
+  for(let i=0;i<s.length;i++){const r=s[i].getBoundingClientRect(); if(cx>=r.left&&cx<=r.right&&cy>=r.top&&cy<=r.bottom) return i;}
+  return null;
+}
+
+function setMode(m){
+  MODE=m;
+  document.getElementById('btnA').classList.toggle('on',m==='A');
+  document.getElementById('btnB').classList.toggle('on',m==='B');
+  document.getElementById('lead').textContent = m==='A'
+    ? 'Version A — pills drift in two staggered columns and slowly swap places.'
+    : 'Version B — pills are scattered at random and stay still.';
+  // clear any placements
+  for(const pid in place){ place[pid]=null; }
+  Array.from(slotsEl.children).forEach(s=>s.classList.remove('filled','over'));
+  layout();
+}
+function reshuffle(){ for(const pid in place){place[pid]=null;} Array.from(slotsEl.children).forEach(s=>s.classList.remove('filled','over')); layout(); }
+
+build();
+requestAnimationFrame(()=>setMode('A'));
+window.addEventListener('resize',()=>{ /* keep simple: no auto relayout */ });
+</script>
+</body>
+</html>
