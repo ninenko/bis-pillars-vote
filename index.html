@@ -149,7 +149,6 @@
       <h1>Rate four areas</h1>
       <p class="lead">Drag each area into a slot. <b>1</b> = most important to you, <b>4</b> = least.</p>
       <div class="stage" id="stage-v1"></div>
-      <div class="abtoggle">Layout:<button data-m="A" onclick="setMode('A')">A &#183; ideas below</button><button data-m="B" onclick="setMode('B')">B &#183; ideas left</button></div>
     </div>
     <div class="row">
       <button class="btn alt small" style="flex:0 0 auto" onclick="go('intro')">Back</button>
@@ -163,7 +162,6 @@
       <h1>How do you think the team would rate these on average?</h1>
       <p class="lead">Now drag them to show how you think <b>the team as a whole</b> would rate these four areas — not your own view this time.</p>
       <div class="stage" id="stage-v2"></div>
-      <div class="abtoggle">Layout:<button data-m="A" onclick="setMode('A')">A &#183; ideas below</button><button data-m="B" onclick="setMode('B')">B &#183; ideas left</button></div>
     </div>
     <div class="row">
       <button class="btn alt small" style="flex:0 0 auto" onclick="go('v1')">Back</button>
@@ -246,15 +244,9 @@ function renderIntro(){
 
 /* ---------- ranking: ideas tray + slots, reparenting drag ---------- */
 const rankCtx={}; let dragging=null;
-let voteMode = (localStorage.getItem('voteMode')||'A');
-function applyMode(){
-  document.querySelectorAll('.stage').forEach(s=>{ s.classList.toggle('modeA',voteMode==='A'); s.classList.toggle('modeB',voteMode==='B'); });
-  document.querySelectorAll('.abtoggle button').forEach(b=>b.classList.toggle('on', b.dataset.m===voteMode));
-}
-function setMode(m){ voteMode=m; localStorage.setItem('voteMode',m); applyMode(); }
 
 function setupRank(which){
-  const stage=document.getElementById('stage-'+which);
+  const stage=document.getElementById('stage-'+which); stage.classList.add('modeA');
   const tray=document.createElement('div'); tray.className='tray';
   const slots=document.createElement('div'); slots.className='slots';
   for(let i=0;i<N;i++){
@@ -272,7 +264,7 @@ function setupRank(which){
     tray.appendChild(b); badges[p.id]=b; attachDrag(b,which);
   });
   rankCtx[which]={stage,tray,slots,badges,place};
-  updateRankButton(which); applyMode();
+  updateRankButton(which);
 }
 
 function attachDrag(b,which){
@@ -504,7 +496,7 @@ setInterval(()=>{
 renderIntro();
 const voted = JSON.parse(localStorage.getItem('voted_'+SESSION)||'null');
 if(voted){ state.submitted=true; state.myV1=voted.v1; state.myV2=voted.v2; relabelStart(true); }
-loadCount(); applyMode();
+loadCount();
 if(!LIVE){
   const b=document.getElementById('banner'); b.classList.remove('hidden');
   b.innerHTML='Demo mode. Add your Firebase database URL in the code to collect votes from everyone\'s phones.';
