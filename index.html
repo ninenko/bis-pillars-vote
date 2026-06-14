@@ -164,13 +164,17 @@ const SESSION = "meeting-2026-04";
 
 const PILLARS = [
   {id:"ai",      name:"AI mastery",       tag:"Pillar 1", color:"var(--p1)",
-   desc:"Staff and students as critical thinkers and confident masters of AI — not passive users."},
+   desc:"Critical thinkers and masters of AI — not passive users.",
+   long:"Our 2035 vision asks students and staff to thrive as masters of AI — critical thinkers who direct the technology rather than lean on it. Right now BIS has no single AI policy: a device-level ban sits awkwardly beside a more permissive academic-honesty stance, and there is no clear path for building AI skills from primary through to the Diploma. Creating a coherent, school-wide AI framework, and the teaching to go with it, is the first job — and the only pillar with its own formal deliverable this year."},
   {id:"nature",  name:"Nature over screens", tag:"Pillar 2", color:"var(--p2)",
-   desc:"More time outdoors and hands-on than on screens; learning rooted in the real world."},
+   desc:"More time outdoors and hands-on than on screens.",
+   long:"The aim is simple: students and staff should spend more time outside in nature than in front of screens, with at least 5% of school time — about nine days a year — spent off campus in the community. The ground for it is already here: an adventure playground, treehouses, air-quality monitors, a farm forest-school partnership, and a preschool that is outdoors for over an hour a day. The gaps are real too — Bishkek's winter air quality limits outdoor time for months, we are nearer three to five off-campus days than nine, and we do not yet measure outdoor or screen time at all."},
   {id:"pathways",name:"Student pathways", tag:"Pillar 3", color:"var(--p3)",
-   desc:"Wider routes through school — EPIC expansion, a Global Impact Diploma, flexible timetable and space options."},
+   desc:"Wider routes through school — more choice and agency.",
+   long:"Engagement falls sharply as students move up the school — nationally, from around three-quarters of pupils engaged in Grade 5 to under a third by Grade 11 — and the strongest remedy is giving students more genuine choice and ownership of their learning. This pillar is about widening the routes through BIS: growing EPIC, exploring a Global Impact Diploma that layers onto the IB, opening up MYP options, and using our spaces and timetable more flexibly. The foundations exist; the real question is how to open these pathways to many more students, not just a few."},
   {id:"time",    name:"Teaching time",    tag:"Pillar 4", color:"var(--p4)",
-   desc:"A healthier balance of directed instruction — aiming for around three hours a day — with more experiential learning."}
+   desc:"Around three hours a day of directed teaching — more time for the rest.",
+   long:"The goal is to bring directed, front-of-class teaching down to an average of about three hours a day, freeing the rest for projects, group work, sport and creative activities. Our timetable currently runs closer to six hours of teaching periods, so this is a real shift — and the evidence is clear that it means moving those hours into well-scaffolded, guided inquiry, not simply stepping back and letting students work unaided. May lesson observations show some classrooms already teach this way, so the change is about spreading good practice and supporting teachers, not inventing something new."}
 ];
 const N = PILLARS.length;
 const LIVE = DB_URL && DB_URL.indexOf("PASTE_") === -1;
@@ -181,7 +185,7 @@ function renderIntro(){
   document.getElementById('introPillars').innerHTML = PILLARS.map(p=>`
     <div class="pillar" style="--c:${p.color}">
       <h3><span class="chip" style="--c:${p.color}">${p.tag.split(' ')[1]}</span>${p.name}</h3>
-      <p>${p.desc}</p>
+      <p>${p.long}</p>
     </div>`).join('');
 }
 
