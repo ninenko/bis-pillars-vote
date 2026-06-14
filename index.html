@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>BIS — Four Areas: Priorities Vote</title>
+<title>BIS — Four strategic goals</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Open+Sans:wght@400;600;700&display=swap');
   :root{
@@ -112,15 +112,15 @@
         <text x="0" y="1" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-weight="800" font-size="16" style="dominant-baseline:central">BIS</text>
       </g>
     </svg>
-    <div><b>Bishkek International School</b><span>Four Areas — priorities vote</span></div>
+    <div><b>Bishkek International School</b><span>Four strategic goals</span></div>
   </header>
 
   <div id="banner" class="banner hidden"></div>
 
   <section id="screen-intro" class="screen">
     <div class="card">
-      <h1>Four areas for the future of BIS</h1>
-      <p class="lead">These are the four areas we're exploring. In a moment you'll rate them — first by your own view, then by how you think the team sees them.</p>
+      <h1>Four strategic areas for innovation</h1>
+      <p class="lead">Explore the four strategic areas outlined for innovation below. They're shown to you in random order. Once you're familiar with them, continue to the next page to rate them.</p>
       <div class="pillars" id="introPillars"></div>
     </div>
     <button class="btn" onclick="go('v1')">Start →</button>
@@ -217,13 +217,13 @@ const SESSION = "meeting-2026-04";
 
 const PILLARS = [
   {id:"ai",      name:"AI mastery",       color:"var(--p1)",
-   long:"We want every student and staff member to become a confident master of AI &#8212; using it as a critical thinker, not leaning on it. The goal is one shared, consistent way of building AI skills from primary right through to the Diploma."},
+   long:"We want every student and staff member to become a confident master of AI &#8212; using it as a critical thinker, not leaning on it. The goal is one shared, consistent way of building AI skills from primary right through to graduation."},
   {id:"nature",  name:"Nature over screens", color:"var(--p2)",
    long:"We want students and staff to spend more time outside in nature than in front of screens. The goal is to make the outdoors and our community a regular, valued part of how we learn."},
   {id:"pathways",name:"Student pathways", color:"var(--p3)",
    long:"We want to give students more genuine choice and ownership over how they learn. The goal is to widen the routes through BIS &#8212; growing EPIC, new diploma options, and more flexible use of our spaces and timetable."},
   {id:"time",    name:"Teaching time",    color:"var(--p4)",
-   long:"We want to balance directed teaching with more time for projects, group work, sport and creative activities. The goal is around three hours a day of front-of-class teaching, with the rest for hands-on, active learning."}
+   long:"We want to balance directed teaching with more time for projects, group work, sport and creative activities. The goal is around three hours a day of frontal instruction, with the rest for hands-on, active learning."}
 ];
 const N = PILLARS.length;
 const LIVE = DB_URL && DB_URL.indexOf("PASTE_") === -1;
