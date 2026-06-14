@@ -5,23 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>BIS — Four Pillars: Priorities Vote</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Open+Sans:wght@400;600;700&display=swap');
   :root{
     --bg:#f4f6f8; --card:#ffffff; --ink:#1f2733; --muted:#6b7785;
-    --line:#e3e8ee; --accent:#2f6f6b; --accent-d:#244f4c;
+    --line:#e3e8ee; --accent:#00008b; --accent-d:#000063; --gold:#f2b600;
     --p1:#3b6ea5; --p2:#4a9d5b; --p3:#b9892f; --p4:#8a5fb0;
     --shadow:0 1px 3px rgba(20,30,45,.08),0 6px 24px rgba(20,30,45,.06);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  body{font-family:"Open Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:var(--bg);color:var(--ink);line-height:1.5;font-size:16px;-webkit-font-smoothing:antialiased}
   .wrap{max-width:620px;margin:0 auto;padding:18px 16px 64px}
-  header.app{display:flex;align-items:center;gap:10px;margin:6px 2px 18px}
-  header.app .dot{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-d));flex:0 0 auto}
-  header.app b{font-size:15px;letter-spacing:.2px}
+  header.app{display:flex;align-items:center;gap:11px;margin:6px 2px 16px;padding-bottom:12px;border-bottom:2px solid var(--gold)}
+  header.app .emblem{width:46px;height:46px;flex:0 0 auto}
+  header.app b{font-family:"Playfair Display",Georgia,serif;font-size:16px;letter-spacing:.2px;color:var(--accent)}
   header.app span{color:var(--muted);font-size:13px;display:block;margin-top:-2px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
-  h1{font-size:23px;line-height:1.25;margin:2px 0 8px}
+  h1{font-family:"Playfair Display",Georgia,serif;font-size:24px;line-height:1.22;margin:2px 0 8px;color:var(--accent-d)}
   h2{font-size:18px;margin:0 0 6px}
   p.lead{color:var(--muted);margin:0 0 14px}
   .pillars{display:flex;flex-direction:column;gap:12px;margin:16px 0}
@@ -89,7 +90,18 @@
 <body>
 <div class="wrap">
   <header class="app">
-    <div class="dot"></div>
+    <svg class="emblem" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BIS">
+      <g transform="translate(50,50)">
+        <g fill="#f2b600" font-size="13" text-anchor="middle" style="dominant-baseline:central">
+          <text x="0" y="-40">&#9733;</text><text x="20" y="-34.6">&#9733;</text><text x="34.6" y="-20">&#9733;</text>
+          <text x="40" y="0">&#9733;</text><text x="34.6" y="20">&#9733;</text><text x="20" y="34.6">&#9733;</text>
+          <text x="0" y="40">&#9733;</text><text x="-20" y="34.6">&#9733;</text><text x="-34.6" y="20">&#9733;</text>
+          <text x="-40" y="0">&#9733;</text><text x="-34.6" y="-20">&#9733;</text><text x="-20" y="-34.6">&#9733;</text>
+        </g>
+        <circle r="27" fill="#00008b"/><circle r="27" fill="none" stroke="#f2b600" stroke-width="2"/>
+        <text x="0" y="1" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-weight="800" font-size="16" style="dominant-baseline:central">BIS</text>
+      </g>
+    </svg>
     <div><b>Bishkek International School</b><span>Four Pillars — priorities vote</span></div>
   </header>
 
