@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BIS — Four Pillars: Priorities Vote</title>
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --ink:#1f2733; --muted:#6b7785;
+    --line:#e3e8ee; --accent:#2f6f6b; --accent-d:#244f4c;
+    --p1:#3b6ea5; --p2:#4a9d5b; --p3:#b9892f; --p4:#8a5fb0;
+    --shadow:0 1px 3px rgba(20,30,45,.08),0 6px 24px rgba(20,30,45,.06);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5;font-size:16px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:620px;margin:0 auto;padding:18px 16px 64px}
+  header.app{display:flex;align-items:center;gap:10px;margin:6px 2px 18px}
+  header.app .dot{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-d));flex:0 0 auto}
+  header.app b{font-size:15px;letter-spacing:.2px}
+  header.app span{color:var(--muted);font-size:13px;display:block;margin-top:-2px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+  h1{font-size:23px;line-height:1.25;margin:2px 0 8px}
+  h2{font-size:18px;margin:0 0 6px}
+  p.lead{color:var(--muted);margin:0 0 14px}
+  .pillars{display:flex;flex-direction:column;gap:12px;margin:16px 0}
+  .pillar{border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;padding:13px 14px;background:#fff}
+  .pillar h3{margin:0 0 3px;font-size:16px;display:flex;align-items:center;gap:8px}
+  .pillar .tag{font-size:12px;font-weight:600;color:var(--c);text-transform:uppercase;letter-spacing:.4px}
+  .pillar p{margin:4px 0 0;font-size:14.5px;color:#414b59}
+  .chip{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:6px;background:var(--c);color:#fff;font-size:12.5px;font-weight:700;flex:0 0 auto}
+  .btn{display:block;width:100%;border:0;border-radius:12px;padding:15px 18px;font-size:16px;font-weight:600;
+    background:var(--accent);color:#fff;cursor:pointer;transition:.15s;text-align:center}
+  .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.alt{background:#eef2f5;color:var(--ink);border:1px solid var(--line)}
+  .btn.small{width:auto;display:inline-block;padding:9px 14px;font-size:14px}
+  .steps{display:flex;gap:6px;margin:0 0 16px}
+  .steps .s{flex:1;height:5px;border-radius:4px;background:var(--line)}
+  .steps .s.on{background:var(--accent)}
+  .rank-list{list-style:none;margin:14px 0 6px;padding:0;display:flex;flex-direction:column;gap:10px}
+  .rank-item{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-left:5px solid var(--c);
+    border-radius:12px;padding:12px 12px;background:#fff;user-select:none}
+  .rank-item .num{width:26px;height:26px;line-height:26px;text-align:center;border-radius:7px;
+    background:var(--c);color:#fff;font-weight:700;font-size:14px;flex:0 0 auto}
+  .rank-item .body{flex:1;min-width:0}
+  .rank-item .body b{display:block;font-size:15px}
+  .rank-item .body small{color:var(--muted);font-size:12.5px;display:block;line-height:1.35}
+  .arrows{display:flex;flex-direction:column;gap:5px}
+  .arrows button{width:38px;height:30px;border:1px solid var(--line);background:#f7f9fb;border-radius:8px;
+    font-size:15px;cursor:pointer;color:var(--ink);display:flex;align-items:center;justify-content:center}
+  .arrows button:active{background:#e7edf2}
+  .arrows button:disabled{opacity:.3}
+  .hint{font-size:13px;color:var(--muted);margin:2px 0 14px}
+  .res-group{margin:8px 0 20px}
+  .res-group h2{display:flex;align-items:baseline;justify-content:space-between}
+  .res-group h2 em{font-style:normal;font-size:13px;color:var(--muted);font-weight:500}
+  .bar{display:flex;align-items:center;gap:10px;margin:9px 0}
+  .bar .lbl{flex:0 0 128px;font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:7px}
+  .bar .lbl .sq{width:11px;height:11px;border-radius:3px;background:var(--c);flex:0 0 auto}
+  .bar .track{flex:1;background:#eef2f5;border-radius:8px;height:24px;position:relative;overflow:hidden}
+  .bar .fill{height:100%;background:var(--c);border-radius:8px;width:0;transition:width .6s cubic-bezier(.4,0,.2,1)}
+  .bar .val{position:absolute;right:8px;top:0;line-height:24px;font-size:12.5px;font-weight:700;color:#2a3340}
+  .insight{background:#f0f6f5;border:1px solid #d6e8e6;border-radius:12px;padding:14px 15px;font-size:14.5px;margin-top:6px}
+  .insight b{color:var(--accent-d)}
+  .meta{text-align:center;color:var(--muted);font-size:13px;margin:8px 0}
+  .banner{background:#fff5e6;border:1px solid #f0d9a8;color:#7a5a16;border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:14px}
+  .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:22px}
+  a.link{color:var(--accent);font-weight:600;text-decoration:none;cursor:pointer}
+  .hidden{display:none}
+  .row{display:flex;gap:10px}
+  .row .btn{flex:1}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#1f2733;color:#fff;
+    padding:11px 18px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:50}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="app">
+    <div class="dot"></div>
+    <div><b>Bishkek International School</b><span>Four Pillars — priorities vote</span></div>
+  </header>
+
+  <div id="banner" class="banner hidden"></div>
+
+  <!-- ============ INTRO ============ -->
+  <section id="screen-intro" class="screen">
+    <div class="card">
+      <h1>Four pillars for the future of BIS</h1>
+      <p class="lead">These are the four directions we're scoping. In a moment you'll rank them — first by your own view, then by how you think the whole team sees them.</p>
+      <div class="pillars" id="introPillars"></div>
+    </div>
+    <button class="btn" onclick="go('v1')">Start voting →</button>
+    <p class="foot">Anonymous · takes about 2 minutes · <a class="link" onclick="go('results')">view live results</a></p>
+  </section>
+
+  <!-- ============ VOTE 1 ============ -->
+  <section id="screen-v1" class="screen hidden">
+    <div class="steps"><div class="s on"></div><div class="s"></div></div>
+    <div class="card">
+      <h1>Vote 1 — your priorities</h1>
+      <p class="lead">Order the four pillars from <b>most</b> to <b>least</b> important <b>to you</b>. Use the arrows to move each one up or down.</p>
+      <ol class="rank-list" id="list-v1"></ol>
+      <p class="hint">1 = most important · 4 = least important</p>
+    </div>
+    <div class="row">
+      <button class="btn alt small" style="flex:0 0 auto" onclick="go('intro')">Back</button>
+      <button class="btn" onclick="go('v2')">Next: predict the team →</button>
+    </div>
+  </section>
+
+  <!-- ============ VOTE 2 ============ -->
+  <section id="screen-v2" class="screen hidden">
+    <div class="steps"><div class="s on"></div><div class="s on"></div></div>
+    <div class="card">
+      <h1>Vote 2 — predict the team</h1>
+      <p class="lead">Now order them by how you think <b>the whole team</b> will rank these pillars on average — not your own view this time.</p>
+      <ol class="rank-list" id="list-v2"></ol>
+      <p class="hint">1 = what you think the team values most</p>
+    </div>
+    <div class="row">
+      <button class="btn alt small" style="flex:0 0 auto" onclick="go('v1')">Back</button>
+      <button class="btn" id="submitBtn" onclick="submitVote()">Submit both votes ✓</button>
+    </div>
+  </section>
+
+  <!-- ============ THANKS ============ -->
+  <section id="screen-thanks" class="screen hidden">
+    <div class="card" style="text-align:center">
+      <h1>Thank you 🎉</h1>
+      <p class="lead">Your votes are in. Results update live on the main screen as people respond.</p>
+      <button class="btn" onclick="go('results')">See live results →</button>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section id="screen-results" class="screen hidden">
+    <div class="card">
+      <h1>Live results</h1>
+      <p class="meta" id="respCount">Loading…</p>
+
+      <div class="res-group">
+        <h2>The team's actual priorities <em>Vote 1</em></h2>
+        <div id="bars-actual"></div>
+      </div>
+
+      <div class="res-group">
+        <h2>What people expected the team to say <em>Vote 2</em></h2>
+        <div id="bars-pred"></div>
+      </div>
+
+      <div class="insight" id="insight"></div>
+    </div>
+    <div class="row">
+      <button class="btn alt small" style="flex:0 0 auto" onclick="go('intro')">Home</button>
+      <button class="btn alt" onclick="loadResults()">↻ Refresh</button>
+    </div>
+    <p class="foot" id="liveNote"></p>
+  </section>
+
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+/* ======================================================================
+   CONFIG  —  paste your Firebase Realtime Database URL between the quotes.
+   Looks like:  https://your-project-default-rtdb.firebaseio.com
+   Leave as-is to run in single-device DEMO mode (votes stay on this phone).
+   ====================================================================== */
+const DB_URL  = "https://bis-pillars-default-rtdb.firebaseio.com";
+const SESSION = "meeting-2026-04";   // change to start a fresh, clean vote
+/* ===================================================================== */
+
+const PILLARS = [
+  {id:"ai",      name:"AI mastery",       tag:"Pillar 1", color:"var(--p1)",
+   desc:"Staff and students as critical thinkers and confident masters of AI — not passive users."},
+  {id:"nature",  name:"Nature over screens", tag:"Pillar 2", color:"var(--p2)",
+   desc:"More time outdoors and hands-on than on screens; learning rooted in the real world."},
+  {id:"pathways",name:"Student pathways", tag:"Pillar 3", color:"var(--p3)",
+   desc:"Wider routes through school — EPIC expansion, a Global Impact Diploma, flexible timetable and space options."},
+  {id:"time",    name:"Teaching time",    tag:"Pillar 4", color:"var(--p4)",
+   desc:"A healthier balance of directed instruction — aiming for around three hours a day — with more experiential learning."}
+];
+const N = PILLARS.length;
+const LIVE = DB_URL && DB_URL.indexOf("PASTE_") === -1;
+
+const state = { v1: PILLARS.map(p=>p.id), v2: PILLARS.map(p=>p.id), submitted:false };
+
+/* ---------- intro pillar cards ---------- */
+function renderIntro(){
+  document.getElementById('introPillars').innerHTML = PILLARS.map(p=>`
+    <div class="pillar" style="--c:${p.color}">
+      <h3><span class="chip" style="--c:${p.color}">${p.tag.split(' ')[1]}</span>${p.name}</h3>
+      <p>${p.desc}</p>
+    </div>`).join('');
+}
+
+/* ---------- reorderable list ---------- */
+function renderList(which){
+  const order = state[which];
+  const ul = document.getElementById('list-'+which);
+  ul.innerHTML = order.map((id,i)=>{
+    const p = PILLARS.find(x=>x.id===id);
+    return `<li class="rank-item" style="--c:${p.color}">
+      <span class="num" style="--c:${p.color}">${i+1}</span>
+      <div class="body"><b>${p.name}</b><small>${p.desc}</small></div>
+      <div class="arrows">
+        <button onclick="move('${which}',${i},-1)" ${i===0?'disabled':''} aria-label="up">▲</button>
+        <button onclick="move('${which}',${i},1)" ${i===N-1?'disabled':''} aria-label="down">▼</button>
+      </div></li>`;
+  }).join('');
+}
+function move(which,i,dir){
+  const arr = state[which]; const j=i+dir;
+  if(j<0||j>=arr.length) return;
+  [arr[i],arr[j]]=[arr[j],arr[i]];
+  renderList(which);
+}
+
+/* ---------- navigation ---------- */
+function go(screen){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  document.getElementById('screen-'+screen).classList.remove('hidden');
+  window.scrollTo(0,0);
+  if(screen==='v1') renderList('v1');
+  if(screen==='v2') renderList('v2');
+  if(screen==='results') loadResults();
+  if(LIVE) location.hash = screen;
+}
+
+/* ---------- scoring ---------- */
+// order[0] = most important -> N points; order[N-1] -> 1 point
+function pointsFromOrder(order){
+  const pts={}; order.forEach((id,i)=> pts[id]= N - i); return pts;
+}
+
+/* ---------- submit ---------- */
+async function submitVote(){
+  if(state.submitted){ toast("You've already voted — thank you!"); go('results'); return; }
+  const btn=document.getElementById('submitBtn'); btn.disabled=true; btn.textContent='Submitting…';
+  const payload = { v1:[...state.v1], v2:[...state.v2], ts:Date.now() };
+  try{
+    if(LIVE){
+      const r = await fetch(`${DB_URL}/sessions/${SESSION}/responses.json`,{
+        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+    }else{
+      const arr=JSON.parse(localStorage.getItem('demo_'+SESSION)||'[]');
+      arr.push(payload); localStorage.setItem('demo_'+SESSION,JSON.stringify(arr));
+    }
+    state.submitted=true;
+    go('thanks');
+  }catch(e){
+    toast('Could not submit — check connection');
+    btn.disabled=false; btn.textContent='Submit both votes ✓';
+  }
+}
+
+/* ---------- results ---------- */
+async function fetchResponses(){
+  if(LIVE){
+    const r= await fetch(`${DB_URL}/sessions/${SESSION}/responses.json`);
+    const data = await r.json();
+    return data ? Object.values(data) : [];
+  }else{
+    return JSON.parse(localStorage.getItem('demo_'+SESSION)||'[]');
+  }
+}
+async function loadResults(){
+  let resp=[];
+  try{ resp= await fetchResponses(); }
+  catch(e){ document.getElementById('respCount').textContent='Could not load results.'; return; }
+
+  const count=resp.length;
+  document.getElementById('respCount').textContent =
+    count===0 ? 'No votes yet — be the first!' : `${count} ${count===1?'response':'responses'} so far`;
+
+  const actual={}, pred={};
+  PILLARS.forEach(p=>{actual[p.id]=0; pred[p.id]=0;});
+  resp.forEach(v=>{
+    if(v.v1){ const pt=pointsFromOrder(v.v1); PILLARS.forEach(p=>actual[p.id]+=pt[p.id]||0); }
+    if(v.v2){ const pt=pointsFromOrder(v.v2); PILLARS.forEach(p=>pred[p.id]+=pt[p.id]||0); }
+  });
+
+  drawBars('bars-actual', actual, count);
+  drawBars('bars-pred',  pred,   count);
+  drawInsight(actual, pred, count);
+
+  document.getElementById('liveNote').textContent =
+    LIVE ? 'Auto-refreshing every 5 seconds' : 'DEMO MODE — votes stored only on this device';
+}
+function drawBars(elId, scores, count){
+  const max = count*N || 1;   // each voter gives a pillar at most N points
+  const ranked=[...PILLARS].sort((a,b)=>scores[b.id]-scores[a.id]);
+  document.getElementById(elId).innerHTML = ranked.map(p=>{
+    const s=scores[p.id]; const pct=Math.round(s/max*100);
+    const avg = count? (s/count).toFixed(2):'0';
+    return `<div class="bar" style="--c:${p.color}">
+      <div class="lbl"><span class="sq" style="--c:${p.color}"></span>${p.name}</div>
+      <div class="track"><div class="fill" style="--c:${p.color};width:${pct}%"></div>
+        <span class="val">${avg}</span></div>
+    </div>`;
+  }).join('');
+}
+function drawInsight(actual, pred, count){
+  const box=document.getElementById('insight');
+  if(count<2){ box.innerHTML='Insights appear once a few people have voted. The number on each bar is the average priority score (higher = more important).'; return; }
+  let maxGap={d:-1e9,p:null}, minGap={d:1e9,p:null};
+  PILLARS.forEach(p=>{
+    const d=(actual[p.id]-pred[p.id])/count;     // per-voter gap
+    if(d>maxGap.d) maxGap={d,p};
+    if(d<minGap.d) minGap={d,p};
+  });
+  const topActual=[...PILLARS].sort((a,b)=>actual[b.id]-actual[a.id])[0];
+  const topPred=[...PILLARS].sort((a,b)=>pred[b.id]-pred[a.id])[0];
+  let html=`The team's top priority is <b>${topActual.name}</b>. `;
+  if(topPred.id!==topActual.id){
+    html+=`But people <em>expected</em> the team to rank <b>${topPred.name}</b> first — a gap between reality and perception. `;
+  }else{
+    html+=`People correctly expected the team to rank it first. `;
+  }
+  if(maxGap.p && Math.abs(maxGap.d)>0.25){
+    html+=`<br><br><b>${maxGap.p.name}</b> is valued more than people assumed the team would. `;
+  }
+  if(minGap.p && minGap.p.id!==maxGap.p?.id && Math.abs(minGap.d)>0.25){
+    html+=`<b>${minGap.p.name}</b> is valued less than people expected.`;
+  }
+  box.innerHTML=html;
+}
+
+/* ---------- toast ---------- */
+let toastT;
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* ---------- live auto-refresh on results ---------- */
+setInterval(()=>{
+  if(!document.getElementById('screen-results').classList.contains('hidden')) loadResults();
+}, 5000);
+
+/* ---------- boot ---------- */
+renderIntro();
+if(!LIVE){
+  const b=document.getElementById('banner');
+  b.classList.remove('hidden');
+  b.innerHTML='⚙️ <b>Demo mode.</b> Add your Firebase database URL in the code to collect votes from everyone\'s phones. For now votes stay on this device.';
+}
+// allow opening straight to results via #results (shared facilitator link)
+if(location.hash==='#results'){ go('results'); } else { go('intro'); }
+</
