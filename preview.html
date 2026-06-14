@@ -81,48 +81,37 @@ function build(){
   });
 }
 
-function poolTop(){ return slotsEl.offsetHeight+20; }
+function poolTop(){ return slotsEl.offsetHeight+14; }
 
+let layoutOrder=null;
 function layout(){
   const sw=stage.clientWidth; const top=poolTop();
   let bh=40; PILLARS.forEach(p=>bh=Math.max(bh,badges[p.id].offsetHeight||40));
-  if(MODE==='A'){
-    const rowH=bh+26; const poolH=rowH*N; stage.style.height=(top+poolH)+'px';
-    // staggered two columns: left rows 0&2, right rows 1&3 -> no two share a row
-    const order=shuffle(PILLARS.map((_,i)=>i)); // random badge -> anchor slot
-    const anchors=[];
-    for(let i=0;i<N;i++){
-      const isLeft=(i%2===0);
-      const bw=180; // approx for x targets, refined per badge below
-      anchors.push({left:isLeft,row:i});
-    }
-    PILLARS.forEach((p,idx)=>{
-      const b=badges[p.id]; const bw=b.offsetWidth||170;
-      const a=anchors[order[idx]];
-      const x=a.left? 8 : Math.max(10, sw-bw-8);
-      const y=top + a.row*rowH + (rowH-bh)/2;
-      b._base={x,y}; b._target={x,y};
-      b._orbit={r:7,ph:Math.random()*6.283,sp:0.5+Math.random()*0.4};
-      b._home={x,y};
-      b.style.left=x+'px'; b.style.top=y+'px';
-    });
-    startFloat(); startSwaps();
-  } else {
-    stopFloat(); stopSwaps();
-    const poolH=250; stage.style.height=(top+poolH)+'px';
-    const placed=[];
-    PILLARS.forEach(p=>{
-      const b=badges[p.id]; const bw=b.offsetWidth||170;
-      let x,y,ok=false,tries=0;
-      const maxX=Math.max(8,sw-bw-8), maxY=top+poolH-bh-6, pad=12;
-      while(!ok && tries++<400){
-        x=8+Math.random()*(maxX-8); y=top+6+Math.random()*(maxY-top-6); ok=true;
-        for(const r of placed){ if(x<r.x+r.w+pad && x+bw+pad>r.x && y<r.y+bh+pad && y+bh+pad>r.y){ ok=false; break; } }
-      }
-      placed.push({x,y,w:bw});
-      b._home={x,y}; b.style.left=x+'px'; b.style.top=y+'px';
-    });
+  if(!layoutOrder) layoutOrder=shuffle(PILLARS.map(p=>p.id));
+  const ids=layoutOrder;
+  const w={}; ids.forEach(id=>w[id]=badges[id].offsetWidth||170);
+  const rowH=bh+12, gap=22;
+  const Lw=Math.max(w[ids[0]],w[ids[1]]);
+  const Rw=Math.max(w[ids[2]],w[ids[3]]);
+  const total=Lw+gap+Rw;
+  let anchors, poolH;
+  if(total<=sw-12){                       // wide enough: tight centred two columns
+    const startX=Math.max(6,(sw-total)/2);
+    const lx=startX, rx=startX+Lw+gap;
+    anchors=[[ids[0],lx,top],[ids[1],lx,top+rowH],[ids[2],rx,top],[ids[3],rx,top+rowH]];
+    poolH=rowH*2;
+  } else {                                 // narrow (phone): zigzag, right column offset -> no overlap
+    const lx=6, rx=Math.max(lx+Lw+10, sw-Rw-6);
+    anchors=[[ids[0],lx,top],[ids[1],lx,top+rowH],[ids[2],rx,top+rowH/2],[ids[3],rx,top+rowH*1.5]];
+    poolH=rowH*2+rowH/2;
   }
+  stage.style.height=(top+poolH+4)+'px';
+  anchors.forEach(a=>{ const id=a[0],x=a[1],y=a[2]; const b=badges[id];
+    b._home={x,y}; b._base={x,y}; b._target={x,y};
+    b._orbit={r: MODE==='A'?6:0, ph:Math.random()*6.283, sp:0.5+Math.random()*0.4};
+    b.style.left=x+'px'; b.style.top=y+'px';
+  });
+  if(MODE==='A'){ startFloat(); startSwaps(); } else { stopFloat(); stopSwaps(); }
 }
 
 function startFloat(){
@@ -213,7 +202,7 @@ function setMode(m){
   Array.from(slotsEl.children).forEach(s=>s.classList.remove('filled','over'));
   layout();
 }
-function reshuffle(){ for(const pid in place){place[pid]=null;} Array.from(slotsEl.children).forEach(s=>s.classList.remove('filled','over')); layout(); }
+function reshuffle(){ layoutOrder=null; for(const pid in place){place[pid]=null;} Array.from(slotsEl.children).forEach(s=>s.classList.remove('filled','over')); layout(); }
 
 build();
 requestAnimationFrame(()=>setMode('A'));
