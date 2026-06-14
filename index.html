@@ -27,32 +27,39 @@
   .pillars{display:flex;flex-direction:column;gap:12px;margin:16px 0}
   .pillar{border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;padding:13px 14px;background:#fff}
   .pillar h3{margin:0 0 3px;font-size:16px;display:flex;align-items:center;gap:8px}
-  .pillar .tag{font-size:12px;font-weight:600;color:var(--c);text-transform:uppercase;letter-spacing:.4px}
   .pillar p{margin:4px 0 0;font-size:14.5px;color:#414b59}
   .chip{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:6px;background:var(--c);color:#fff;font-size:12.5px;font-weight:700;flex:0 0 auto}
   .btn{display:block;width:100%;border:0;border-radius:12px;padding:15px 18px;font-size:16px;font-weight:600;
     background:var(--accent);color:#fff;cursor:pointer;transition:.15s;text-align:center}
   .btn:active{transform:translateY(1px)}
-  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
   .btn.alt{background:#eef2f5;color:var(--ink);border:1px solid var(--line)}
   .btn.small{width:auto;display:inline-block;padding:9px 14px;font-size:14px}
   .steps{display:flex;gap:6px;margin:0 0 16px}
   .steps .s{flex:1;height:5px;border-radius:4px;background:var(--line)}
   .steps .s.on{background:var(--accent)}
-  .rank-list{list-style:none;margin:14px 0 6px;padding:0;display:flex;flex-direction:column;gap:10px}
-  .rank-item{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-left:5px solid var(--c);
-    border-radius:12px;padding:12px 12px;background:#fff;user-select:none}
-  .rank-item .num{width:26px;height:26px;line-height:26px;text-align:center;border-radius:7px;
-    background:var(--c);color:#fff;font-weight:700;font-size:14px;flex:0 0 auto}
-  .rank-item .body{flex:1;min-width:0}
-  .rank-item .body b{display:block;font-size:15px}
-  .rank-item .body small{color:var(--muted);font-size:12.5px;display:block;line-height:1.35}
-  .arrows{display:flex;flex-direction:column;gap:5px}
-  .arrows button{width:38px;height:30px;border:1px solid var(--line);background:#f7f9fb;border-radius:8px;
-    font-size:15px;cursor:pointer;color:var(--ink);display:flex;align-items:center;justify-content:center}
-  .arrows button:active{background:#e7edf2}
-  .arrows button:disabled{opacity:.3}
   .hint{font-size:13px;color:var(--muted);margin:2px 0 14px}
+
+  /* drag-and-drop ranking */
+  .stage{position:relative;width:100%;overflow:visible;margin:8px 0 4px;touch-action:pan-y}
+  .slots{display:flex;flex-direction:column;gap:10px}
+  .slot{display:flex;align-items:center;gap:12px;min-height:58px;border:2px dashed var(--line);
+    border-radius:14px;padding:8px 10px;background:#fbfcfd;transition:border-color .15s,background .15s}
+  .slot.over{border-color:var(--accent);background:#e9f4f2}
+  .slot.filled{border-style:solid;border-color:#dfe6ec;background:#fff}
+  .slot .rk{width:34px;height:34px;flex:0 0 auto;border-radius:9px;background:var(--accent);color:#fff;
+    font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center}
+  .slot .holder{flex:1;min-height:40px;display:flex;align-items:center}
+  .slot .drop-hint{color:var(--muted);font-size:13px}
+  .slot.filled .drop-hint{display:none}
+  .badge{position:absolute;display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;
+    background:#fff;border:1px solid var(--line);border-left:5px solid var(--c);
+    box-shadow:0 4px 14px rgba(20,30,45,.13);font-weight:600;font-size:14px;color:var(--ink);
+    cursor:grab;user-select:none;touch-action:none;white-space:nowrap;z-index:3;will-change:left,top}
+  .badge .bchip{width:20px;height:20px;border-radius:6px;background:var(--c);color:#fff;font-size:12px;
+    font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .badge.dragging{cursor:grabbing;box-shadow:0 12px 30px rgba(20,30,45,.28);z-index:60;transform:scale(1.04)}
+
   .res-group{margin:8px 0 20px}
   .res-group h2{display:flex;align-items:baseline;justify-content:space-between}
   .res-group h2 em{font-style:normal;font-size:13px;color:var(--muted);font-weight:500}
@@ -64,6 +71,9 @@
   .bar .val{position:absolute;right:8px;top:0;line-height:24px;font-size:12.5px;font-weight:700;color:#2a3340}
   .insight{background:#f0f6f5;border:1px solid #d6e8e6;border-radius:12px;padding:14px 15px;font-size:14.5px;margin-top:6px}
   .insight b{color:var(--accent-d)}
+  .calc{margin-top:14px;font-size:13.5px;color:var(--muted)}
+  .calc summary{cursor:pointer;color:var(--accent);font-weight:600}
+  .calc p{margin:8px 0 0;line-height:1.55}
   .meta{text-align:center;color:var(--muted);font-size:13px;margin:8px 0}
   .banner{background:#fff5e6;border:1px solid #f0d9a8;color:#7a5a16;border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:14px}
   .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:22px}
@@ -72,7 +82,7 @@
   .row{display:flex;gap:10px}
   .row .btn{flex:1}
   .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#1f2733;color:#fff;
-    padding:11px 18px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:50}
+    padding:11px 18px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:90}
   .toast.show{opacity:1}
 </style>
 </head>
@@ -99,13 +109,12 @@
     <div class="steps"><div class="s on"></div><div class="s"></div></div>
     <div class="card">
       <h1>Vote 1 — your priorities</h1>
-      <p class="lead">Order the four pillars from <b>most</b> to <b>least</b> important <b>to you</b>. Use the arrows to move each one up or down.</p>
-      <ol class="rank-list" id="list-v1"></ol>
-      <p class="hint">1 = most important · 4 = least important</p>
+      <p class="lead">Drag each floating pillar up into a slot. <b>1</b> = most important to you, <b>4</b> = least.</p>
+      <div class="stage" id="stage-v1"></div>
     </div>
     <div class="row">
       <button class="btn alt small" style="flex:0 0 auto" onclick="go('intro')">Back</button>
-      <button class="btn" onclick="go('v2')">Next: predict the team →</button>
+      <button class="btn" id="nextBtn" onclick="go('v2')" disabled>Next: predict the team →</button>
     </div>
   </section>
 
@@ -113,13 +122,12 @@
     <div class="steps"><div class="s on"></div><div class="s on"></div></div>
     <div class="card">
       <h1>Vote 2 — predict the team</h1>
-      <p class="lead">Now order them by how you think <b>the whole team</b> will rank these pillars on average — not your own view this time.</p>
-      <ol class="rank-list" id="list-v2"></ol>
-      <p class="hint">1 = what you think the team values most</p>
+      <p class="lead">Now drag them to show how you think <b>the whole team</b> will rank these on average — not your own view this time.</p>
+      <div class="stage" id="stage-v2"></div>
     </div>
     <div class="row">
       <button class="btn alt small" style="flex:0 0 auto" onclick="go('v1')">Back</button>
-      <button class="btn" id="submitBtn" onclick="submitVote()">Submit both votes ✓</button>
+      <button class="btn" id="submitBtn" onclick="submitVote()" disabled>Submit both votes ✓</button>
     </div>
   </section>
 
@@ -147,6 +155,11 @@
       </div>
 
       <div class="insight" id="insight"></div>
+
+      <details class="calc">
+        <summary>How are these numbers calculated?</summary>
+        <p>When you rank the pillars, each position scores points: 1st choice = 4, 2nd = 3, 3rd = 2, 4th = 1. We add up everyone's points for each pillar. The number on each bar is the <b>average</b> points it received — 4.0 means everyone placed it first, 1.0 means everyone placed it last — and the bar length shows that score as a share of the maximum. The top block uses people's own rankings (Vote 1); the bottom uses their predictions of the team (Vote 2).</p>
+      </details>
     </div>
     <div class="row">
       <button class="btn alt small" style="flex:0 0 auto" onclick="go('intro')">Home</button>
@@ -164,22 +177,17 @@ const SESSION = "meeting-2026-04";
 
 const PILLARS = [
   {id:"ai",      name:"AI mastery",       tag:"Pillar 1", color:"var(--p1)",
-   desc:"Critical thinkers and masters of AI — not passive users.",
-   long:"Our 2035 vision asks students and staff to thrive as masters of AI — critical thinkers who direct the technology rather than lean on it. Right now BIS has no single AI policy: a device-level ban sits awkwardly beside a more permissive academic-honesty stance, and there is no clear path for building AI skills from primary through to the Diploma. Creating a coherent, school-wide AI framework, and the teaching to go with it, is the first job — and the only pillar with its own formal deliverable this year."},
+   long:"We want every student and staff member to become a confident master of AI — using it as a critical thinker, not leaning on it. The goal is one shared, consistent way of building AI skills from primary right through to the Diploma."},
   {id:"nature",  name:"Nature over screens", tag:"Pillar 2", color:"var(--p2)",
-   desc:"More time outdoors and hands-on than on screens.",
-   long:"The aim is simple: students and staff should spend more time outside in nature than in front of screens, with at least 5% of school time — about nine days a year — spent off campus in the community. The ground for it is already here: an adventure playground, treehouses, air-quality monitors, a farm forest-school partnership, and a preschool that is outdoors for over an hour a day. The gaps are real too — Bishkek's winter air quality limits outdoor time for months, we are nearer three to five off-campus days than nine, and we do not yet measure outdoor or screen time at all."},
+   long:"We want students and staff to spend more time outside in nature than in front of screens. The goal is to make the outdoors and our community a regular, valued part of how we learn."},
   {id:"pathways",name:"Student pathways", tag:"Pillar 3", color:"var(--p3)",
-   desc:"Wider routes through school — more choice and agency.",
-   long:"Engagement falls sharply as students move up the school — nationally, from around three-quarters of pupils engaged in Grade 5 to under a third by Grade 11 — and the strongest remedy is giving students more genuine choice and ownership of their learning. This pillar is about widening the routes through BIS: growing EPIC, exploring a Global Impact Diploma that layers onto the IB, opening up MYP options, and using our spaces and timetable more flexibly. The foundations exist; the real question is how to open these pathways to many more students, not just a few."},
+   long:"We want to give students more genuine choice and ownership over how they learn. The goal is to widen the routes through BIS — growing EPIC, new diploma options, and more flexible use of our spaces and timetable."},
   {id:"time",    name:"Teaching time",    tag:"Pillar 4", color:"var(--p4)",
-   desc:"Around three hours a day of directed teaching — more time for the rest.",
-   long:"The goal is to bring directed, front-of-class teaching down to an average of about three hours a day, freeing the rest for projects, group work, sport and creative activities. Our timetable currently runs closer to six hours of teaching periods, so this is a real shift — and the evidence is clear that it means moving those hours into well-scaffolded, guided inquiry, not simply stepping back and letting students work unaided. May lesson observations show some classrooms already teach this way, so the change is about spreading good practice and supporting teachers, not inventing something new."}
+   long:"We want to balance directed teaching with more time for projects, group work, sport and creative activities. The goal is around three hours a day of front-of-class teaching, with the rest for hands-on, active learning."}
 ];
 const N = PILLARS.length;
 const LIVE = DB_URL && DB_URL.indexOf("PASTE_") === -1;
-
-const state = { v1: PILLARS.map(p=>p.id), v2: PILLARS.map(p=>p.id), submitted:false };
+const state = { submitted:false };
 
 function renderIntro(){
   document.getElementById('introPillars').innerHTML = PILLARS.map(p=>`
@@ -189,45 +197,155 @@ function renderIntro(){
     </div>`).join('');
 }
 
-function renderList(which){
-  const order = state[which];
-  const ul = document.getElementById('list-'+which);
-  ul.innerHTML = order.map((id,i)=>{
-    const p = PILLARS.find(x=>x.id===id);
-    return `<li class="rank-item" style="--c:${p.color}">
-      <span class="num" style="--c:${p.color}">${i+1}</span>
-      <div class="body"><b>${p.name}</b><small>${p.desc}</small></div>
-      <div class="arrows">
-        <button onclick="move('${which}',${i},-1)" ${i===0?'disabled':''} aria-label="up">▲</button>
-        <button onclick="move('${which}',${i},1)" ${i===N-1?'disabled':''} aria-label="down">▼</button>
-      </div></li>`;
-  }).join('');
-}
-function move(which,i,dir){
-  const arr = state[which]; const j=i+dir;
-  if(j<0||j>=arr.length) return;
-  [arr[i],arr[j]]=[arr[j],arr[i]];
-  renderList(which);
+/* ---------- drag-and-drop ranking ---------- */
+const rankCtx={}; let dragging=null, floatRAF=null;
+
+function setupRank(which){
+  const stage=document.getElementById('stage-'+which);
+  const slots=document.createElement('div'); slots.className='slots';
+  for(let i=0;i<N;i++){
+    const sl=document.createElement('div'); sl.className='slot'; sl.dataset.slot=i;
+    const hint=i===0?'most important':(i===N-1?'least important':'drag a pillar here');
+    sl.innerHTML='<div class="rk">'+(i+1)+'</div><div class="holder"><span class="drop-hint">'+hint+'</span></div>';
+    slots.appendChild(sl);
+  }
+  stage.appendChild(slots);
+  const place={}; const badges={};
+  PILLARS.forEach(p=>{
+    place[p.id]=null;
+    const b=document.createElement('div'); b.className='badge'; b.style.setProperty('--c',p.color);
+    b.innerHTML='<span class="bchip">'+p.tag.split(' ')[1]+'</span>'+p.name;
+    b._pid=p.id; stage.appendChild(b); badges[p.id]=b; attachDrag(b,which);
+  });
+  rankCtx[which]={stage,slots,badges,place};
+  requestAnimationFrame(()=>layoutAnchors(which));
+  updateRankButton(which);
+  startFloat();
 }
 
+function layoutAnchors(which){
+  const ctx=rankCtx[which]; const stage=ctx.stage, slots=ctx.slots;
+  const sw=stage.clientWidth; const slotsH=slots.offsetHeight;
+  const top=slotsH+18; const poolH=240; stage.style.height=(top+poolH)+'px';
+  const bottom=top+poolH-6; const bandH=(bottom-top)/N;
+  PILLARS.forEach((p,i)=>{
+    const b=ctx.badges[p.id]; const bw=b.offsetWidth||150, bh=b.offsetHeight||40;
+    const r=6+Math.random()*4;
+    let x=8+Math.random()*Math.max(8,sw-bw-16);
+    let y=top+i*bandH+(bandH-bh)/2+(Math.random()*8-4);
+    x=Math.max(r+2,Math.min(sw-bw-r-2,x));
+    y=Math.max(top+r,Math.min(bottom-bh-r,y));
+    b._anchor={x,y,r,ph:Math.random()*6.283,sp:0.45+Math.random()*0.45};
+    b.style.left=x+'px'; b.style.top=y+'px';
+  });
+}
+
+function startFloat(){
+  if(floatRAF) return;
+  function loop(now){
+    const t=now/1000;
+    for(const which in rankCtx){
+      if(document.getElementById('screen-'+which).classList.contains('hidden')) continue;
+      const ctx=rankCtx[which];
+      for(const pid in ctx.badges){
+        const b=ctx.badges[pid];
+        if(ctx.place[pid]!==null || dragging===b || !b._anchor) continue;
+        const a=b._anchor;
+        b.style.left=(a.x+Math.cos(t*a.sp+a.ph)*a.r)+'px';
+        b.style.top =(a.y+Math.sin(t*a.sp+a.ph)*a.r)+'px';
+      }
+    }
+    floatRAF=requestAnimationFrame(loop);
+  }
+  floatRAF=requestAnimationFrame(loop);
+}
+
+function attachDrag(b,which){
+  b.addEventListener('pointerdown',e=>{
+    e.preventDefault(); b.setPointerCapture(e.pointerId);
+    const ctx=rankCtx[which];
+    if(ctx.place[b._pid]!==null){ const si=ctx.place[b._pid]; ctx.place[b._pid]=null; markSlot(ctx,si,false); updateRankButton(which); }
+    dragging=b; b.classList.add('dragging');
+    const sr=ctx.stage.getBoundingClientRect(); const br=b.getBoundingClientRect();
+    b._off={x:e.clientX-br.left,y:e.clientY-br.top}; b._sr=sr;
+  });
+  b.addEventListener('pointermove',e=>{
+    if(dragging!==b) return;
+    const sr=b._sr;
+    b.style.left=(e.clientX-sr.left-b._off.x)+'px';
+    b.style.top =(e.clientY-sr.top -b._off.y)+'px';
+    highlightSlot(which,e.clientX,e.clientY);
+  });
+  function end(e,cancel){
+    if(dragging!==b) return; dragging=null; b.classList.remove('dragging');
+    const ctx=rankCtx[which]; clearHighlight(ctx);
+    const si=cancel?null:slotAt(which,e.clientX,e.clientY);
+    if(si!==null){
+      for(const pid in ctx.place){ if(ctx.place[pid]===si && pid!==b._pid){ ctx.place[pid]=null; markSlot(ctx,si,false); } }
+      ctx.place[b._pid]=si; placeBadgeInSlot(ctx,b,si); markSlot(ctx,si,true);
+    } else {
+      const sw=ctx.stage.clientWidth, sh=ctx.stage.clientHeight, bw=b.offsetWidth, bh=b.offsetHeight;
+      let ax=parseFloat(b.style.left), ay=parseFloat(b.style.top);
+      b._anchor.x=Math.max(8,Math.min(sw-bw-8,ax));
+      b._anchor.y=Math.max(8,Math.min(sh-bh-8,ay));
+    }
+    updateRankButton(which);
+  }
+  b.addEventListener('pointerup',e=>end(e,false));
+  b.addEventListener('pointercancel',e=>end(e,true));
+}
+
+function slotAt(which,cx,cy){
+  const sls=rankCtx[which].slots.children;
+  for(let i=0;i<sls.length;i++){ const r=sls[i].getBoundingClientRect(); if(cx>=r.left&&cx<=r.right&&cy>=r.top&&cy<=r.bottom) return i; }
+  return null;
+}
+function highlightSlot(which,cx,cy){
+  const ctx=rankCtx[which]; const si=slotAt(which,cx,cy);
+  Array.from(ctx.slots.children).forEach((s,i)=>s.classList.toggle('over',i===si));
+}
+function clearHighlight(ctx){ Array.from(ctx.slots.children).forEach(s=>s.classList.remove('over')); }
+function markSlot(ctx,si,filled){ ctx.slots.children[si].classList.toggle('filled',filled); }
+function placeBadgeInSlot(ctx,b,si){
+  const holder=ctx.slots.children[si].querySelector('.holder');
+  const sr=ctx.stage.getBoundingClientRect(); const hr=holder.getBoundingClientRect();
+  b.style.left=(hr.left-sr.left)+'px';
+  b.style.top =(hr.top-sr.top+(hr.height-b.offsetHeight)/2)+'px';
+}
+function updateRankButton(which){
+  const ctx=rankCtx[which]; const filled=Object.values(ctx.place).filter(v=>v!==null).length;
+  const btn=document.getElementById(which==='v1'?'nextBtn':'submitBtn');
+  if(btn) btn.disabled = filled<N;
+}
+function orderOf(which){
+  const ctx=rankCtx[which]; const ord=new Array(N).fill(null);
+  for(const pid in ctx.place){ if(ctx.place[pid]!==null) ord[ctx.place[pid]]=pid; }
+  return ord;
+}
+
+/* ---------- navigation ---------- */
 function go(screen){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
   document.getElementById('screen-'+screen).classList.remove('hidden');
   window.scrollTo(0,0);
-  if(screen==='v1') renderList('v1');
-  if(screen==='v2') renderList('v2');
+  if((screen==='v1'||screen==='v2') && !rankCtx[screen]) setupRank(screen);
+  if(screen==='v1'||screen==='v2') startFloat();
   if(screen==='results') loadResults();
   if(LIVE) location.hash = screen;
 }
 
+/* ---------- scoring ---------- */
 function pointsFromOrder(order){
   const pts={}; order.forEach((id,i)=> pts[id]= N - i); return pts;
 }
 
+/* ---------- submit ---------- */
 async function submitVote(){
   if(state.submitted){ toast("You've already voted — thank you!"); go('results'); return; }
+  const v1=orderOf('v1'), v2=orderOf('v2');
+  if(v1.includes(null)||v2.includes(null)){ toast('Please place all four pillars'); return; }
   const btn=document.getElementById('submitBtn'); btn.disabled=true; btn.textContent='Submitting…';
-  const payload = { v1:[...state.v1], v2:[...state.v2], ts:Date.now() };
+  const payload = { v1, v2, ts:Date.now() };
   try{
     if(LIVE){
       const r = await fetch(`${DB_URL}/sessions/${SESSION}/responses.json`,{
@@ -245,6 +363,7 @@ async function submitVote(){
   }
 }
 
+/* ---------- results ---------- */
 async function fetchResponses(){
   if(LIVE){
     const r= await fetch(`${DB_URL}/sessions/${SESSION}/responses.json`);
@@ -310,7 +429,7 @@ function drawInsight(actual, pred, count){
   if(maxGap.p && Math.abs(maxGap.d)>0.25){
     html+=`<br><br><b>${maxGap.p.name}</b> is valued more than people assumed the team would. `;
   }
-  if(minGap.p && minGap.p.id!==maxGap.p?.id && Math.abs(minGap.d)>0.25){
+  if(minGap.p && minGap.p.id!==(maxGap.p&&maxGap.p.id) && Math.abs(minGap.d)>0.25){
     html+=`<b>${minGap.p.name}</b> is valued less than people expected.`;
   }
   box.innerHTML=html;
