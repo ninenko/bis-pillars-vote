@@ -124,7 +124,8 @@
       <div class="pillars" id="introPillars"></div>
     </div>
     <button class="btn" onclick="go('v1')">Start →</button>
-    <p class="foot">Anonymous · takes about 2 minutes · <a class="link" onclick="go('results')">view live results</a></p>
+    <p class="foot"><b id="voteCount">&#8230;</b> people have voted &#183; <a class="link" onclick="go('results')">view live results</a></p>
+    <p class="foot" style="margin-top:6px;font-size:11px">Anonymous &#183; about 2 minutes &#183; <a class="link" onclick="resetVotes()">Admin reset</a></p>
   </section>
 
   <section id="screen-v1" class="screen hidden">
@@ -354,6 +355,7 @@ function go(screen){
   if((screen==='v1'||screen==='v2') && !rankCtx[screen]) setupRank(screen);
   if(screen==='summary') loadSummary();
   if(screen==='results') loadResults();
+  if(screen==='intro') loadCount();
   if(LIVE) location.hash = screen;
 }
 
@@ -477,15 +479,34 @@ function drawInsight(actual, pred, count){
   box.innerHTML=html;
 }
 
+async function loadCount(){
+  let n=0; try{ const r=await fetchResponses(); n=r.length; }catch(e){ return; }
+  const el=document.getElementById('voteCount'); if(el) el.textContent=n;
+}
+async function resetVotes(){
+  const pw=prompt('Enter admin password to reset all votes:');
+  if(pw===null) return;
+  if(pw!=='54321'){ toast('Wrong password'); return; }
+  try{
+    if(LIVE){ const r=await fetch(`${DB_URL}/sessions/${SESSION}.json`,{method:'DELETE'}); if(!r.ok) throw 0; }
+    else { localStorage.removeItem('demo_'+SESSION); }
+    state.submitted=false; state.myV1=null; state.myV2=null;
+    toast('All votes reset'); loadCount();
+    if(!document.getElementById('screen-results').classList.contains('hidden')) loadResults();
+  }catch(e){ toast('Reset failed'); }
+}
+
 let toastT;
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600); }
 
 setInterval(()=>{
   if(!document.getElementById('screen-results').classList.contains('hidden')) loadResults();
   else if(!document.getElementById('screen-summary').classList.contains('hidden')) loadSummary();
+  else if(!document.getElementById('screen-intro').classList.contains('hidden')) loadCount();
 }, 5000);
 
 renderIntro();
+loadCount();
 if(!LIVE){
   const b=document.getElementById('banner'); b.classList.remove('hidden');
   b.innerHTML='Demo mode. Add your Firebase database URL in the code to collect votes from everyone\'s phones.';
