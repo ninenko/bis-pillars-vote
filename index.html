@@ -30,6 +30,7 @@
   .pillar h3{margin:0 0 3px;font-size:16px;display:flex;align-items:center;gap:8px}
   .pillar p{margin:4px 0 0;font-size:14.5px;color:#414b59}
   .chip{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:6px;background:var(--c);color:#fff;font-size:12.5px;font-weight:700;flex:0 0 auto}
+  .swatch{width:15px;height:15px;border-radius:50%;background:var(--c);flex:0 0 auto}
   .btn{display:block;width:100%;border:0;border-radius:12px;padding:15px 18px;font-size:16px;font-weight:600;
     background:var(--accent);color:#fff;cursor:pointer;transition:.15s;text-align:center}
   .btn:active{transform:translateY(1px)}
@@ -59,6 +60,7 @@
     cursor:grab;user-select:none;touch-action:none;white-space:nowrap;z-index:3;will-change:left,top}
   .badge .bchip{width:20px;height:20px;border-radius:6px;background:var(--c);color:#fff;font-size:12px;
     font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .badge .bdot{width:15px;height:15px;border-radius:50%;background:var(--c);flex:0 0 auto}
   .badge.dragging{cursor:grabbing;box-shadow:0 12px 30px rgba(20,30,45,.28);z-index:60;transform:scale(1.04)}
 
   .res-group{margin:8px 0 20px}
@@ -201,10 +203,11 @@ const N = PILLARS.length;
 const LIVE = DB_URL && DB_URL.indexOf("PASTE_") === -1;
 const state = { submitted:false };
 
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function renderIntro(){
-  document.getElementById('introPillars').innerHTML = PILLARS.map(p=>`
+  document.getElementById('introPillars').innerHTML = shuffle(PILLARS).map(p=>`
     <div class="pillar" style="--c:${p.color}">
-      <h3><span class="chip" style="--c:${p.color}">${p.tag.split(' ')[1]}</span>${p.name}</h3>
+      <h3><span class="swatch" style="--c:${p.color}"></span>${p.name}</h3>
       <p>${p.long}</p>
     </div>`).join('');
 }
@@ -226,7 +229,7 @@ function setupRank(which){
   PILLARS.forEach(p=>{
     place[p.id]=null;
     const b=document.createElement('div'); b.className='badge'; b.style.setProperty('--c',p.color);
-    b.innerHTML='<span class="bchip">'+p.tag.split(' ')[1]+'</span>'+p.name;
+    b.innerHTML='<span class="bdot"></span>'+p.name;
     b._pid=p.id; stage.appendChild(b); badges[p.id]=b; attachDrag(b,which);
   });
   rankCtx[which]={stage,slots,badges,place};
@@ -238,16 +241,19 @@ function setupRank(which){
 function layoutAnchors(which){
   const ctx=rankCtx[which]; const stage=ctx.stage, slots=ctx.slots;
   const sw=stage.clientWidth; const slotsH=slots.offsetHeight;
-  const top=slotsH+18; const poolH=240; stage.style.height=(top+poolH)+'px';
-  const bottom=top+poolH-6; const bandH=(bottom-top)/N;
-  PILLARS.forEach((p,i)=>{
-    const b=ctx.badges[p.id]; const bw=b.offsetWidth||150, bh=b.offsetHeight||40;
-    const r=6+Math.random()*4;
-    let x=8+Math.random()*Math.max(8,sw-bw-16);
-    let y=top+i*bandH+(bandH-bh)/2+(Math.random()*8-4);
-    x=Math.max(r+2,Math.min(sw-bw-r-2,x));
-    y=Math.max(top+r,Math.min(bottom-bh-r,y));
-    b._anchor={x,y,r,ph:Math.random()*6.283,sp:0.45+Math.random()*0.45};
+  const top=slotsH+20;
+  let bh=40; PILLARS.forEach(p=>{ bh=Math.max(bh, ctx.badges[p.id].offsetHeight||40); });
+  const r=7; const laneH=bh+2*r+18; const poolH=laneH*N;
+  stage.style.height=(top+poolH)+'px';
+  const lanes=shuffle(PILLARS.map((_,i)=>i));   // one unique lane per pillar -> never stacked
+  PILLARS.forEach((p,idx)=>{
+    const b=ctx.badges[p.id]; const bw=b.offsetWidth||150;
+    const lane=lanes[idx];
+    const y=top+lane*laneH+(laneH-bh)/2;
+    const lo=8+r, hi=Math.max(lo+1, sw-bw-8-r);
+    const x=lo+Math.random()*(hi-lo);
+    b._anchor={x,y,r,ph:Math.random()*6.283,sp:0.4+Math.random()*0.4};
+    b._home=Object.assign({},b._anchor);
     b.style.left=x+'px'; b.style.top=y+'px';
   });
 }
@@ -296,10 +302,7 @@ function attachDrag(b,which){
       for(const pid in ctx.place){ if(ctx.place[pid]===si && pid!==b._pid){ ctx.place[pid]=null; markSlot(ctx,si,false); } }
       ctx.place[b._pid]=si; placeBadgeInSlot(ctx,b,si); markSlot(ctx,si,true);
     } else {
-      const sw=ctx.stage.clientWidth, sh=ctx.stage.clientHeight, bw=b.offsetWidth, bh=b.offsetHeight;
-      let ax=parseFloat(b.style.left), ay=parseFloat(b.style.top);
-      b._anchor.x=Math.max(8,Math.min(sw-bw-8,ax));
-      b._anchor.y=Math.max(8,Math.min(sh-bh-8,ay));
+      if(b._home) b._anchor=Object.assign({},b._home);
     }
     updateRankButton(which);
   }
